@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Button, Container } from '@mui/material';
+import { Input, Button, Container, Grid, Card } from '@mui/material';
 import { useCookies } from 'react-cookie';
 import PrevUsers from '../../components/PrevUsers';
 
@@ -44,26 +44,36 @@ const Login: React.FC<LoginProps> = ({
 	
 	return <>
 		<Container sx={ { height: '40vh' } }>
-			<Input placeholder={ 'USER NAME' } value={ inputText } onChange={ onInputChange }/>
-			<br/>
-			<Button onClick={ onOAuthChange }>
-				{ isAuth ? 'hide oauth' : 'oauth key' }
-			</Button>
-			<br/>
-			{ isAuth && <>
-				<Input placeholder={ 'KEY HERE' }/>
-				<br/>
-			</> }
-			<Button onClick={ onSubmit }>
-				submit
-			</Button>
+			<Grid container justifyContent={ 'center' }>
+				<Card sx={ { width: '300px', marginTop: '30px', padding: '30px 0' } }>
+					<Grid container justifyContent={ 'center' } alignItems={ 'center' } flexDirection={ 'column' }>
+						<Input
+							placeholder={ 'USERNAME' }
+							value={ inputText }
+							onChange={ onInputChange }
+						/>
+						<Button onClick={ onOAuthChange } sx={ { margin: '5px 0' } }>
+							{ isAuth ? 'hide oauth' : 'oauth key' }
+						</Button>
+						{ isAuth && <Input placeholder={ 'KEY HERE' }/> }
+						<Button onClick={ onSubmit } sx={ { margin: '5px 0 0 0' } }>
+							submit
+						</Button>
+					</Grid>
+				</Card>
+			</Grid>
 		</Container>
-		<PrevUsers
-			logFromUser={ logFromUser }
-			addRegisteredUser={ addRegisteredUser }
-			removeRegisteredUser={ removeRegisteredUser }
-			getRegisteredUsers={ getRegisteredUsers }
-		/>
+		<Container sx={ { height: '50vh' } }>
+			<PrevUsers
+				logFromUser={ logFromUser }
+				addRegisteredUser={ addRegisteredUser }
+				removeRegisteredUser={ removeRegisteredUser }
+				getRegisteredUsers={ getRegisteredUsers }
+				minWidth={ '250px' }
+				maxWidth={ '450px' }
+				maxHeight={ '250px' }
+			/>
+		</Container>
 	</>;
 };
 
