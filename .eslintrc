@@ -7,15 +7,18 @@
     "jest": true
   },
   "rules": {
-    "semi": ["warn", "always"],
-    "indent": ["warn", "tab"],
+    "semi": "off",
+    "no-unused-vars": "off",
+    "indent": "off",
+    "linebreak-style": "off",
     // Make prettier code formatting suggestions more verbose.
-    "prettier/prettier": ["warn"],
+    "prettier/prettier": "off",
     // Disable <Fragment> => <> replacement. Feel free to change
     "react/jsx-fragments": "off",
     // Disable prefer default export
     "import/prefer-default-export": "off",
     "@typescript-eslint/object-curly-spacing": "off",
+    "@typescript-eslint/no-unused-vars": "off",
     "react/jsx-filename-extension": [0],
     "import/extensions": "off",
     "import/no-extraneous-dependencies": "off"
