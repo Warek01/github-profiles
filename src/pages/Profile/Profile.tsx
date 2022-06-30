@@ -14,6 +14,7 @@ const Profile: React.FC<ProfileProps> = ({ userProfile }) => {
 	
 	// If above check was passed, then it is not null
 	const user = userProfile!;
+	console.log(user);
 	
 	return <>
 		<h1>{ user.name } { user.bio }</h1>
