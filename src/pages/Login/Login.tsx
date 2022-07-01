@@ -2,27 +2,21 @@ import React from 'react';
 import { Input, Button, Grid, Card, Alert } from '@mui/material';
 import PrevUsers from '../../components/PrevUsers';
 
-const cardWidth = {
-	width: {
-		xl: '25vw',
-		lg: '25vw',
-		md: '35vw',
-		sm: '50vw',
-		xs: '75vw',
-		xxs: '85vw'
-	}
-};
 
 type LoginProps = {
+	wrongOauthToken: boolean;
+	isFocused: (element: Element) => boolean;
 	userNotFoundLogin: string;
 	setUserNotFoundLogin: (login: string) => void;
-	setUserProfile: (userName: string) => void;
+	setUserProfile: (userName: string, token: string) => void;
 	getRegisteredUsers: () => string[];
 	addRegisteredUser: (name: string) => void;
 	removeRegisteredUser: (name: string) => void;
 };
 
 const Login: React.FC<LoginProps> = ({
+	                                     wrongOauthToken,
+	                                     isFocused,
 	                                     setUserProfile,
 	                                     addRegisteredUser,
 	                                     getRegisteredUsers,
@@ -30,33 +24,47 @@ const Login: React.FC<LoginProps> = ({
 	                                     userNotFoundLogin,
 	                                     setUserNotFoundLogin
                                      }) => {
+	const cardWidth = React.useMemo(() => {
+		return {
+			width: {
+				xl: '25vw',
+				lg: '25vw',
+				md: '35vw',
+				sm: '50vw',
+				xs: '75vw',
+				xxs: '85vw'
+			}
+		};
+	}, []);
+	
 	const [inputText, setInputText] = React.useState<string>('');
-	const [isAuth, setIsAuth] = React.useState<boolean>(false);
+	const [oauthToken, setOauthToken] = React.useState<string>('');
+	const [oauthInputShown, setOauthInputShown] = React.useState<boolean>(false);
+	
+	const oauthInputRef = React.useRef<HTMLInputElement>(null);
+	const loginInputRef = React.useRef<HTMLInputElement>(null);
 	
 	const submit = React.useCallback(() => {
 		const text = inputText.trim();
 		if (text.length === 0) return;
-		addRegisteredUser(text);
-		setUserProfile(text);
-		setInputText('');
-	}, [inputText, addRegisteredUser, setUserProfile, setInputText]);
+		setUserProfile(text, oauthToken);
+	}, [inputText, addRegisteredUser, setUserProfile, oauthToken]);
 	
 	const disableUserNotFoundAlert = React.useCallback(() => {
 		setUserNotFoundLogin('');
 	}, [setUserNotFoundLogin]);
 	
-	const onOAuthChange: React.MouseEventHandler<HTMLButtonElement> = event => {
-		setIsAuth(prev => !prev);
-	};
+	const onLoginInputChange = React.useCallback(() => {
+		setInputText(loginInputRef.current!.value);
+	}, [setInputText, loginInputRef]);
 	
-	const onInputChange: React.ChangeEventHandler<HTMLInputElement> = event => {
-		setInputText(prev => event.target.value);
-	};
+	const onOauthTokenChange = React.useCallback(() => {
+		setOauthToken(oauthInputRef.current!.value);
+	}, [oauthInputRef, setOauthToken]);
 	
 	const logFromUser = React.useCallback((userName: string): void => {
-		setIsAuth(false);
-		setUserProfile(userName);
-	}, [setIsAuth, setUserProfile]);
+		setUserProfile(userName, ''); // Must implement auth
+	}, [setUserProfile]);
 	
 	const handleInputFormKeydown = React.useCallback((event: React.KeyboardEvent<HTMLElement>): void => {
 		disableUserNotFoundAlert();
@@ -64,17 +72,39 @@ const Login: React.FC<LoginProps> = ({
 			case 'Enter':
 				submit();
 				break;
+			case 'Escape': {
+				if (isFocused(oauthInputRef.current!)) {
+					setOauthInputShown(false);
+				}
+				break;
+			}
 		}
-	}, [disableUserNotFoundAlert]);
+	}, [disableUserNotFoundAlert, oauthToken, submit, setOauthInputShown]);
 	
-	const alertElement = userNotFoundLogin.length ? (<Alert sx={ { margin: '10px 0' } } severity={ 'error' }>
+	const userNotFoundAlertElement = userNotFoundLogin ? (<Alert sx={ { margin: '10px 0' } } severity={ 'error' }>
 		User { userNotFoundLogin } not found
 	</Alert>) : (<></>);
 	
-	const authSectionElement = isAuth ? <Input placeholder={ 'KEY HERE' }/> :
-		<Button onClick={ onOAuthChange }>
+	const unauthorizedAlertElement = wrongOauthToken ? (<Alert sx={ { margin: '10px 0' } } severity={ 'error' }>
+		Wrong OAuth token
+	</Alert>) : (<></>);
+	
+	const authSectionElement = oauthInputShown ? <Input
+			inputRef={ oauthInputRef }
+			placeholder={ 'KEY HERE' }
+			id={ 'oauth-input' }
+			value={ oauthToken }
+			onChange={ onOauthTokenChange }
+		/> :
+		<Button onClick={ () => setOauthInputShown(true) }>
 			oauth key
 		</Button>;
+	
+	React.useEffect(() => {
+		if (oauthInputShown) {
+			oauthInputRef.current!.focus();
+		}
+	}, [oauthInputShown]);
 	
 	return <>
 		<Grid container justifyContent={ 'center' } sx={ { height: '40vh', margin: '4vh 0' } }>
@@ -88,13 +118,14 @@ const Login: React.FC<LoginProps> = ({
 				>
 					<Grid item>
 						<Input
+							inputRef={ loginInputRef }
 							placeholder={ 'USERNAME' }
 							value={ inputText }
-							onChange={ onInputChange }
+							onChange={ onLoginInputChange }
 						/>
 					</Grid>
 					<Grid item>
-						{ alertElement }
+						{ userNotFoundLogin ? userNotFoundAlertElement : unauthorizedAlertElement }
 					</Grid>
 					<Grid item>
 						{ authSectionElement }

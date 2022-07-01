@@ -11,15 +11,17 @@ import Header from './components/Header';
 import { UserProfile } from './types';
 import globalTheme from './Theme';
 
-// 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
-
 const App: React.FC = () => {
 	const navigate = useNavigate();
 	
-	const [cookies, setCookie, removeCookie] = useCookies(['user-name', 'is-auth']);
+	const [cookies, setCookie, removeCookie] = useCookies(['user', 'is-auth']);
 	const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
-	const [loggedUserName, setLoggedUserName] = React.useState<string>(cookies['user-name'] || '');
+	const [loggedUserName, setLoggedUserName] = React.useState<string>(cookies['user']?.split(',')[0] || '');
 	const [userNotFoundLogin, setUserNotFoundLogin] = React.useState<string>('');
+	const [oauthToken, setOauthToken] = React.useState<string>(cookies['user']?.split(',')[1] || '');
+	const [wrongOauthToken, setWrongOauthToken] = React.useState<boolean>(false);
+	
+	const isFocused = React.useCallback((element: Element) => document.activeElement! === element, []);
 	
 	const getRegisteredUsers = React.useCallback((): string[] => {
 		return JSON.parse(localStorage.getItem('registered-users') || '[]');
@@ -39,43 +41,65 @@ const App: React.FC = () => {
 		saveRegisteredUsers(getRegisteredUsers().filter(value => value !== login));
 	}, []);
 	
-	const setUserProfileCallback = React.useCallback((userName: string) => {
+	const setUserProfileCallback = React.useCallback((userName: string, token: string = '') => {
+		setOauthToken(token);
 		setLoggedUserName(userName);
 	}, [setLoggedUserName]);
 	
 	const logOut = React.useCallback(() => {
-		removeCookie('user-name');
+		removeCookie('user');
 		setLoggedUserName('');
 		setUserProfile(null);
 	}, [removeCookie, setLoggedUserName, setUserProfile]);
 	
 	React.useEffect(() => {
-		if (userProfile || !loggedUserName.length) return;
+		if (userProfile || !loggedUserName) return;
 		// Fetch user profile on App load
-		axios.get(`https://api.github.com/users/${ loggedUserName }`)
+		const requestedTimestamp = Date.now();
+		axios.get(`https://api.github.com/users/${ loggedUserName }`, {
+			headers: {
+				'Authorization': oauthToken ? `token ${ oauthToken }` : ''
+			}
+		})
 			.then(res => {
-				setUserProfile(res.data);
+				setUserProfile(obj => {
+					return {
+						requestedTimestamp,
+						auth: !!oauthToken,
+						...res.data
+					};
+				});
 			})
 			.catch((err: AxiosError) => {
-				if (err.response?.status === 404)
-					setUserNotFoundLogin(loggedUserName);
-				else
-					console.log('axios err:', err);
+				switch (err.response!.status) {
+					case 401: // Unauthorized
+						setWrongOauthToken(true);
+						break;
+					case 404: // Not found
+						setUserNotFoundLogin(loggedUserName);
+						break;
+					default:
+						console.log('axios err:', err);
+				}
 			});
 	}, [loggedUserName, userProfile]);
 	
 	React.useEffect(() => {
 		if (userProfile) {
-			setCookie('user-name', userProfile.login);
+			console.log(oauthToken);
+			setCookie('user', [userProfile.login, oauthToken].join(','));
+			addRegisteredUser(userProfile.login);
 			navigate('/profile');
 		}
-	}, [userProfile]);
+	}, [userProfile, oauthToken]);
 	
 	return <ThemeProvider theme={ globalTheme }>
 		<div className={ 'container' }>
 			<Header onLogOut={ logOut } loggedIn={ !!userProfile }/>
 			<Routes>
 				<Route path={ '/' } element={ <Login
+					wrongOauthToken={ wrongOauthToken }
+					isFocused={ isFocused }
 					setUserNotFoundLogin={ setUserNotFoundLogin }
 					userNotFoundLogin={ userNotFoundLogin }
 					setUserProfile={ setUserProfileCallback }
@@ -83,7 +107,9 @@ const App: React.FC = () => {
 					removeRegisteredUser={ removeRegisteredUser }
 					getRegisteredUsers={ getRegisteredUsers }
 				/> }/>
-				<Route path={ '/profile' } element={ <Profile userProfile={ userProfile }/> }/>
+				<Route path={ '/profile' } element={ <Profile
+					userProfile={ userProfile }
+				/> }/>
 			</Routes>
 		</div>
 	</ThemeProvider>;

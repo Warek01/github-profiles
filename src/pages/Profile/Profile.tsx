@@ -14,10 +14,11 @@ const Profile: React.FC<ProfileProps> = ({ userProfile }) => {
 	
 	// If above check was passed, then it is not null
 	const user = userProfile!;
+	const isAuth = user.auth;
 	console.log(user);
 	
 	return <>
-		<h1>{ user.name } { user.bio }</h1>
+		<h1>{ user.name }. { user.bio }</h1>
 	</>;
 };
 

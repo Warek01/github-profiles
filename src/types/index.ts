@@ -1,5 +1,5 @@
 import UserProfile from './User/UserProfile';
-import UserProfileAuth from './User/UserProfileAuth';
 import UserRepo from './User/UserRepo';
+import GithubUserProfile from './User/GithubUserProfile';
 
-export type { UserProfile, UserRepo, UserProfileAuth };
+export type { UserProfile, UserRepo, GithubUserProfile };
