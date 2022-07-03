@@ -8,7 +8,7 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Header from './components/Header';
 
-import { UserProfile } from './types';
+import { UserProfile, GitHubHttpError } from './types';
 import globalTheme from './Theme';
 
 const App: React.FC = () => {
@@ -17,9 +17,8 @@ const App: React.FC = () => {
 	const [cookies, setCookie, removeCookie] = useCookies(['user', 'is-auth']);
 	const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
 	const [loggedUserName, setLoggedUserName] = React.useState<string>(cookies['user']?.split(',')[0] || '');
-	const [userNotFoundLogin, setUserNotFoundLogin] = React.useState<string>('');
 	const [oauthToken, setOauthToken] = React.useState<string>(cookies['user']?.split(',')[1] || '');
-	const [isWrongOauthToken, setIsWrongOauthToken] = React.useState<boolean>(false);
+	const [loginErrMessage, setLoginErrMessage] = React.useState<string>('');
 	
 	const isFocused = React.useCallback((element: Element) => document.activeElement! === element, []);
 	
@@ -54,39 +53,49 @@ const App: React.FC = () => {
 	
 	React.useEffect(() => {
 		if (userProfile || !loggedUserName) return;
-		// Fetch user profile on App load
+		
 		const requestedTimestamp = Date.now();
-		axios.get(`https://api.github.com/users/${ loggedUserName }`, {
-			headers: {
-				'Authorization': oauthToken ? `token ${ oauthToken }` : ''
-			}
-		})
-			.then(res => {
+		
+		(async () => {
+			const req = await fetch(`https://api.github.com/users/${ loggedUserName }`, {
+				method: 'GET',
+				headers: {
+					'Authorization': oauthToken ? `token ${ oauthToken }` : '',
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				}
+			});
+			
+			if (req.ok) {
+				const res = await req.json();
+				
 				setUserProfile(obj => {
 					return {
 						requestedTimestamp,
 						auth: !!oauthToken,
-						...res.data
+						...res
 					};
 				});
-			})
-			.catch((err: AxiosError) => {
-				switch (err.response!.status) {
-					case 401: // Unauthorized
-						setIsWrongOauthToken(true);
+			} else {
+				switch (req.status) {
+					case 401:
+						setLoginErrMessage('Wrong OAuth token.');
 						break;
-					case 404: // Not found
-						setUserNotFoundLogin(loggedUserName);
+					case 404:
+						setLoginErrMessage(`User ${ loggedUserName } not found.`);
 						break;
 					default:
-						console.log('axios err:', err);
+						console.warn('Unknown error:', req);
 				}
-			});
+				
+				setLoggedUserName('');
+				setUserProfile(null);
+			}
+		})();
 	}, [loggedUserName, userProfile]);
 	
 	React.useEffect(() => {
 		if (userProfile) {
-			console.log(oauthToken);
 			setCookie('user', [userProfile.login, oauthToken].join(','));
 			addRegisteredUser(userProfile.login);
 			navigate('/profile');
@@ -98,10 +107,8 @@ const App: React.FC = () => {
 			<Header onLogOut={ logOut } loggedIn={ !!userProfile }/>
 			<Routes>
 				<Route path={ '/' } element={ <Login
-					wrongOauthToken={ isWrongOauthToken }
+					errorMessage={ loginErrMessage }
 					isFocused={ isFocused }
-					setUserNotFoundLogin={ setUserNotFoundLogin }
-					userNotFoundLogin={ userNotFoundLogin }
 					setUserProfile={ setUserProfileCallback }
 					addRegisteredUser={ addRegisteredUser }
 					removeRegisteredUser={ removeRegisteredUser }

@@ -1,13 +1,12 @@
 import React from 'react';
-import { Input, Button, Grid, Card, Alert } from '@mui/material';
+import { Input, Button, Grid, Card, Alert, IconButton } from '@mui/material';
 import PrevUsers from '../../components/PrevUsers';
+import { Close } from '@mui/icons-material';
 
 
 type LoginProps = {
-	wrongOauthToken: boolean;
+	errorMessage: string;
 	isFocused: (element: Element) => boolean;
-	userNotFoundLogin: string;
-	setUserNotFoundLogin: (login: string) => void;
 	setUserProfile: (userName: string, token: string) => void;
 	getRegisteredUsers: () => string[];
 	addRegisteredUser: (name: string) => void;
@@ -15,14 +14,12 @@ type LoginProps = {
 };
 
 const Login: React.FC<LoginProps> = ({
-	                                     wrongOauthToken,
+	                                     errorMessage,
 	                                     isFocused,
 	                                     setUserProfile,
 	                                     addRegisteredUser,
 	                                     getRegisteredUsers,
-	                                     removeRegisteredUser,
-	                                     userNotFoundLogin,
-	                                     setUserNotFoundLogin
+	                                     removeRegisteredUser
                                      }) => {
 	const cardWidth = React.useMemo(() => {
 		return {
@@ -40,6 +37,7 @@ const Login: React.FC<LoginProps> = ({
 	const [inputText, setInputText] = React.useState<string>('');
 	const [oauthToken, setOauthToken] = React.useState<string>('');
 	const [oauthInputShown, setOauthInputShown] = React.useState<boolean>(false);
+	const [errorShown, setErrorShown] = React.useState<boolean>(!!errorMessage);
 	
 	const oauthInputRef = React.useRef<HTMLInputElement>(null);
 	const loginInputRef = React.useRef<HTMLInputElement>(null);
@@ -49,10 +47,6 @@ const Login: React.FC<LoginProps> = ({
 		if (!text) return;
 		setUserProfile(text, oauthToken);
 	}, [inputText, setUserProfile, oauthToken]);
-	
-	const disableUserNotFoundAlert = React.useCallback(() => {
-		setUserNotFoundLogin('');
-	}, [setUserNotFoundLogin]);
 	
 	const onLoginInputChange = React.useCallback(() => {
 		setInputText(loginInputRef.current!.value);
@@ -67,7 +61,6 @@ const Login: React.FC<LoginProps> = ({
 	}, [setUserProfile]);
 	
 	const handleInputFormKeydown = React.useCallback((event: React.KeyboardEvent<HTMLElement>): void => {
-		disableUserNotFoundAlert();
 		switch (event.key) {
 			case 'Enter':
 				submit();
@@ -79,15 +72,12 @@ const Login: React.FC<LoginProps> = ({
 				break;
 			}
 		}
-	}, [disableUserNotFoundAlert, oauthToken, submit, setOauthInputShown]);
+	}, [oauthToken, submit, setOauthInputShown]);
 	
-	const userNotFoundAlertElement = userNotFoundLogin ? (<Alert sx={ { margin: '10px 0' } } severity={ 'error' }>
-		User { userNotFoundLogin } not found
-	</Alert>) : (<></>);
-	
-	const unauthorizedAlertElement = wrongOauthToken ? (<Alert sx={ { margin: '10px 0' } } severity={ 'error' }>
-		Wrong OAuth token
-	</Alert>) : (<></>);
+	const errorElement = <Alert severity={ 'error' }
+	                            action={ <IconButton onClick={ () => setErrorShown(false) }><Close/></IconButton> }>
+		{ errorMessage }
+	</Alert>;
 	
 	const authSectionElement = oauthInputShown ? <Input
 			autoComplete={ 'off' }
@@ -129,7 +119,7 @@ const Login: React.FC<LoginProps> = ({
 						/>
 					</Grid>
 					<Grid item>
-						{ userNotFoundLogin ? userNotFoundAlertElement : unauthorizedAlertElement }
+						{ errorShown && errorElement }
 					</Grid>
 					<Grid item>
 						{ authSectionElement }
