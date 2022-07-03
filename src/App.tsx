@@ -19,7 +19,7 @@ const App: React.FC = () => {
 	const [loggedUserName, setLoggedUserName] = React.useState<string>(cookies['user']?.split(',')[0] || '');
 	const [userNotFoundLogin, setUserNotFoundLogin] = React.useState<string>('');
 	const [oauthToken, setOauthToken] = React.useState<string>(cookies['user']?.split(',')[1] || '');
-	const [wrongOauthToken, setWrongOauthToken] = React.useState<boolean>(false);
+	const [isWrongOauthToken, setIsWrongOauthToken] = React.useState<boolean>(false);
 	
 	const isFocused = React.useCallback((element: Element) => document.activeElement! === element, []);
 	
@@ -73,7 +73,7 @@ const App: React.FC = () => {
 			.catch((err: AxiosError) => {
 				switch (err.response!.status) {
 					case 401: // Unauthorized
-						setWrongOauthToken(true);
+						setIsWrongOauthToken(true);
 						break;
 					case 404: // Not found
 						setUserNotFoundLogin(loggedUserName);
@@ -98,7 +98,7 @@ const App: React.FC = () => {
 			<Header onLogOut={ logOut } loggedIn={ !!userProfile }/>
 			<Routes>
 				<Route path={ '/' } element={ <Login
-					wrongOauthToken={ wrongOauthToken }
+					wrongOauthToken={ isWrongOauthToken }
 					isFocused={ isFocused }
 					setUserNotFoundLogin={ setUserNotFoundLogin }
 					userNotFoundLogin={ userNotFoundLogin }

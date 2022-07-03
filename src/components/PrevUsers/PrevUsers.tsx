@@ -43,17 +43,16 @@ const PrevUsers: React.FC<PrevUsersProps> = ({
 		</IconButton>
 	</Paper>);
 	
-	const noUsersElement = <Paper
-		key={ 'empty' }
-		sx={ { display: 'flex', justifyContent: 'center', width: '50%', margin: '0 auto' } }
-	>
-		None
-	</Paper>;
+	const noUsersElement = <Box p={ 0 } m={ 0 }>
+		<Paper sx={ { width: '50%', margin: '16px auto 0 auto' } }>
+			None
+		</Paper>
+	</Box>;
 	
 	return <Grid container justifyContent={ 'center' } sx={ { margin, maxHeight } }>
 		<Box p={ 1 } sx={ { overflow: 'auto', maxHeight, ...customWidth, ...customScrollbar } }>
-			<Stack spacing={ 2 }>
-				<Paper sx={ { textAlign: 'center' } } elevation={ 2 }>
+			<Stack spacing={ 2 } sx={ { textAlign: 'center' } }>
+				<Paper elevation={ 2 }>
 					Previous users
 				</Paper>
 				{ users.length ? users : noUsersElement }

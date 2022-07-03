@@ -46,9 +46,9 @@ const Login: React.FC<LoginProps> = ({
 	
 	const submit = React.useCallback(() => {
 		const text = inputText.trim();
-		if (text.length === 0) return;
+		if (!text) return;
 		setUserProfile(text, oauthToken);
-	}, [inputText, addRegisteredUser, setUserProfile, oauthToken]);
+	}, [inputText, setUserProfile, oauthToken]);
 	
 	const disableUserNotFoundAlert = React.useCallback(() => {
 		setUserNotFoundLogin('');
@@ -73,7 +73,7 @@ const Login: React.FC<LoginProps> = ({
 				submit();
 				break;
 			case 'Escape': {
-				if (isFocused(oauthInputRef.current!)) {
+				if (isFocused(oauthInputRef.current!) && oauthInputRef.current!.value) {
 					setOauthInputShown(false);
 				}
 				break;
@@ -90,6 +90,7 @@ const Login: React.FC<LoginProps> = ({
 	</Alert>) : (<></>);
 	
 	const authSectionElement = oauthInputShown ? <Input
+			autoComplete={ 'off' }
 			inputRef={ oauthInputRef }
 			placeholder={ 'KEY HERE' }
 			id={ 'oauth-input' }
@@ -103,6 +104,8 @@ const Login: React.FC<LoginProps> = ({
 	React.useEffect(() => {
 		if (oauthInputShown) {
 			oauthInputRef.current!.focus();
+		} else {
+			setOauthToken('');
 		}
 	}, [oauthInputShown]);
 	
@@ -118,6 +121,7 @@ const Login: React.FC<LoginProps> = ({
 				>
 					<Grid item>
 						<Input
+							autoComplete={ 'off' }
 							inputRef={ loginInputRef }
 							placeholder={ 'USERNAME' }
 							value={ inputText }
