@@ -1,26 +1,32 @@
 import React from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { ThemeProvider } from '@mui/material';
-import axios, { AxiosError } from 'axios';
 
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import NotFound from './pages/NotFound';
 import Header from './components/Header';
 
-import { UserProfile, GitHubHttpError } from './types';
+import { UserProfile, GithubUserProfile } from './types';
 import globalTheme from './Theme';
+import Blank from './pages/Blank';
+import GitHubRepo from './types/GitHubRepo';
 
 const App: React.FC = () => {
 	const navigate = useNavigate();
+	const location = useLocation();
+	
+	const path = location.pathname;
 	
 	const [cookies, setCookie, removeCookie] = useCookies(['user', 'is-auth']);
 	const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
+	const [userRepos, setUserRepos] = React.useState<GitHubRepo[] | []>([]);
 	const [loggedUserName, setLoggedUserName] = React.useState<string>(cookies['user']?.split(',')[0] || '');
 	const [oauthToken, setOauthToken] = React.useState<string>(cookies['user']?.split(',')[1] || '');
 	const [loginErrMessage, setLoginErrMessage] = React.useState<string>('');
 	
-	const isFocused = React.useCallback((element: Element) => document.activeElement! === element, []);
+	const isFocused = React.useCallback((element: Element): boolean => document.activeElement! === element, []);
 	
 	const getRegisteredUsers = React.useCallback((): string[] => {
 		return JSON.parse(localStorage.getItem('registered-users') || '[]');
@@ -31,33 +37,43 @@ const App: React.FC = () => {
 	}, []);
 	
 	const addRegisteredUser = React.useCallback((login: string): void => {
+		if (!login) return;
 		const users = getRegisteredUsers();
 		if (users.find(value => value === login)) return;
 		saveRegisteredUsers([...users, login]);
-	}, []);
+	}, [saveRegisteredUsers, getRegisteredUsers]);
 	
 	const removeRegisteredUser = React.useCallback((login: string): void => {
 		saveRegisteredUsers(getRegisteredUsers().filter(value => value !== login));
-	}, []);
+	}, [saveRegisteredUsers, getRegisteredUsers]);
 	
-	const setUserProfileCallback = React.useCallback((userName: string, token: string = '') => {
+	const setUserProfileCallback = React.useCallback((userName: string, token: string = ''): void => {
 		setOauthToken(token);
 		setLoggedUserName(userName);
 	}, [setLoggedUserName]);
 	
-	const logOut = React.useCallback(() => {
+	const logOut = React.useCallback((): void => {
 		removeCookie('user');
 		setLoggedUserName('');
 		setUserProfile(null);
-	}, [removeCookie, setLoggedUserName, setUserProfile]);
+		setOauthToken('');
+		navigate('/login');
+	}, [removeCookie, setLoggedUserName, setUserProfile, setOauthToken]);
 	
 	React.useEffect(() => {
+		if (!loggedUserName && path === '/')
+			navigate('/login');
+	}, [location]);
+	
+	React.useEffect(() => {
+		// Check if user is already logged in
 		if (userProfile || !loggedUserName) return;
 		
-		const requestedTimestamp = Date.now();
-		
 		(async () => {
-			const req = await fetch(`https://api.github.com/users/${ loggedUserName }`, {
+			const requestedTimestamp = Date.now();
+			
+			// Fetch user data
+			const profileReq = await fetch(`https://api.github.com/users/${ loggedUserName }`, {
 				method: 'GET',
 				headers: {
 					'Authorization': oauthToken ? `token ${ oauthToken }` : '',
@@ -66,18 +82,35 @@ const App: React.FC = () => {
 				}
 			});
 			
-			if (req.ok) {
-				const res = await req.json();
+			if (profileReq.ok) {
+				const profileRes = await profileReq.json() as GithubUserProfile;
 				
 				setUserProfile(obj => {
 					return {
 						requestedTimestamp,
 						auth: !!oauthToken,
-						...res
+						...profileRes
 					};
 				});
+				
+				// Fetch user repositories
+				const reposReq = await fetch(profileRes.repos_url, {
+					method: 'GET',
+					headers: {
+						'Authorization': oauthToken ? `token ${ oauthToken }` : '',
+						'Content-Type': 'application/json',
+						'Accept': 'application/json'
+					}
+				});
+				
+				if (reposReq.ok) {
+					const reposRes = await reposReq.json() as GitHubRepo[];
+					
+					setUserRepos(reposRes);
+				}
+				
 			} else {
-				switch (req.status) {
+				switch (profileReq.status) {
 					case 401:
 						setLoginErrMessage('Wrong OAuth token.');
 						break;
@@ -85,17 +118,16 @@ const App: React.FC = () => {
 						setLoginErrMessage(`User ${ loggedUserName } not found.`);
 						break;
 					default:
-						console.warn('Unknown error:', req);
+						console.warn('Unknown error:', profileReq);
 				}
 				
-				setLoggedUserName('');
-				setUserProfile(null);
+				logOut();
 			}
 		})();
 	}, [loggedUserName, userProfile]);
 	
 	React.useEffect(() => {
-		if (userProfile) {
+		if (userProfile && (path === '/' || path === '/login')) {
 			setCookie('user', [userProfile.login, oauthToken].join(','));
 			addRegisteredUser(userProfile.login);
 			navigate('/profile');
@@ -104,9 +136,10 @@ const App: React.FC = () => {
 	
 	return <ThemeProvider theme={ globalTheme }>
 		<div className={ 'container' }>
-			<Header onLogOut={ logOut } loggedIn={ !!userProfile }/>
+			<Header logOut={ logOut } loggedIn={ !!userProfile }/>
 			<Routes>
-				<Route path={ '/' } element={ <Login
+				<Route path={ '/' } element={ <Blank/> }/>
+				<Route path={ 'login' } element={ <Login
 					errorMessage={ loginErrMessage }
 					isFocused={ isFocused }
 					setUserProfile={ setUserProfileCallback }
@@ -114,9 +147,8 @@ const App: React.FC = () => {
 					removeRegisteredUser={ removeRegisteredUser }
 					getRegisteredUsers={ getRegisteredUsers }
 				/> }/>
-				<Route path={ '/profile' } element={ <Profile
-					userProfile={ userProfile }
-				/> }/>
+				<Route path={ 'profile' } element={ <Profile userProfile={ userProfile } userRepos={ userRepos }/> }/>
+				<Route path={ '*' } element={ <NotFound/> }/>
 			</Routes>
 		</div>
 	</ThemeProvider>;

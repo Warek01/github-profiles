@@ -28,9 +28,7 @@ const PrevUsers: React.FC<PrevUsersProps> = ({
 		key={ login }
 		sx={ { display: 'flex', justifyContent: 'space-between', padding: '0 10px' } }
 	>
-		<Button onClick={ () => {
-			logFromUser(login);
-		} }>
+		<Button onClick={ () => logFromUser(login) }>
 			<span>
 				{ login }
 			</span>

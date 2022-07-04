@@ -1,31 +1,79 @@
 import * as React from 'react';
 import { UserProfile } from '../../types';
 import { useNavigate } from 'react-router-dom';
-
-import devConfig from '../../devconfig.json';
-
-import { DevConfig } from '../../types';
-
-const config = devConfig as DevConfig;
+import { Container, Grid, Avatar } from '@mui/material';
+import { LocationOnOutlined, PersonOutlined, InfoOutlined } from '@mui/icons-material';
+import GitHubRepo from '../../types/GitHubRepo';
 
 type ProfileProps = {
 	userProfile: UserProfile | null;
+	userRepos: GitHubRepo[];
 }
 
-const Profile: React.FC<ProfileProps> = ({ userProfile }) => {
+const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
+	console.log(userRepos);
 	const navigate = useNavigate();
 	
-	// If application is loading on '/profile' with no cached username, force location to '/'
-	if (config.forceRedirectHome && !userProfile) location.assign('/');
+	React.useEffect(() => {
+		if (userProfile) {
+		
+		} else {
+			navigate('/');
+		}
+	}, []);
 	
-	// If above check was passed, then it is not null
-	const user = userProfile!;
-	const isAuth = user.auth;
-	console.log(user);
-	
-	return <>
-		<h1>{ user.name }. { user.bio }</h1>
-	</>;
+	if (userProfile) {
+		const user = userProfile;
+		const isAuth = user.auth;
+		
+		return <Container>
+			<Grid container spacing={ 0 } sx={ { height: '92vh' } }>
+				{ /* Main Profile */ }
+				<Grid
+					item
+					container={ true }
+					xs={ 3 }
+					display={ 'flex' }
+					flexDirection={ 'column' }
+				>
+					<Grid item display={ 'flex' } justifyContent={ 'center' }>
+						<Avatar
+							src={ user.avatar_url || '' }
+							alt={ user.login }
+							sx={ { width: '128px', height: '128px' } }
+						>
+							{ user.login[0] }
+						</Avatar>
+					</Grid>
+					<Grid item>
+						{ user.name } @{ user.login }
+					</Grid>
+					<Grid item>
+						<InfoOutlined sx={ { fontSize: '1em', marginRight: '5px' } }/>
+						{ user.bio }
+					</Grid>
+					<Grid item>
+						<PersonOutlined sx={ { fontSize: '1em', marginRight: '5px' } }/>
+						{ user.followers } followers, { user.following } following
+					</Grid>
+					<Grid item>
+						<LocationOnOutlined sx={ { fontSize: '1em', marginRight: '5px' } }/> { user.location }
+					</Grid>
+				</Grid>
+				{ /* Repos */ }
+				<Grid item xs={ 7 }>
+				
+				</Grid>
+				{ /*  */ }
+				<Grid item xs={ 2 }>
+				
+				</Grid>
+			</Grid>
+		</Container>;
+		
+	} else {
+		return <h3 className={ 'text-center' }>Redirecting ...</h3>;
+	}
 };
 
 export default Profile;
