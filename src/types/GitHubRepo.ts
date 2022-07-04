@@ -91,7 +91,7 @@ export default interface GitHubRepo {
 	is_template: boolean;
 	web_commit_signoff_required: boolean;
 	topics: string[];
-	visibility: string;
+	visibility: 'public' | 'private';
 	forks: number;
 	open_issues: number;
 	watchers: number;
