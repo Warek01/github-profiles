@@ -1,7 +1,19 @@
 import { createTheme } from '@mui/material';
 import { blue } from '@mui/material/colors';
+import {Zoom} from '@mui/material';
 
-const globalTheme = createTheme({});
+const globalTheme = createTheme({
+	components: {
+		MuiTooltip: {
+			defaultProps: {
+				enterDelay: 2000,
+				enterNextDelay: 2000,
+				placement: 'top',
+				TransitionComponent: Zoom
+			}
+		}
+	}
+});
 
 export default globalTheme;
 
