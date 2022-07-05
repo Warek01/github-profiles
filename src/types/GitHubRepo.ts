@@ -25,7 +25,7 @@ export default interface GitHubRepo {
 		site_admin: boolean;
 	};
 	html_url: string;
-	description: string;
+	description: string | null;
 	fork: boolean;
 	url: string;
 	forks_url: string;

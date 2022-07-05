@@ -15,7 +15,6 @@ type ProfileProps = {
 }
 
 const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
-	console.log(userRepos);
 	const navigate = useNavigate();
 	
 	React.useEffect(() => {
@@ -29,8 +28,9 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 	if (userProfile) {
 		const user = userProfile;
 		const isAuth = user.auth;
+		console.log(userRepos[0])
 		
-		const repos: JSX.Element[] = userRepos.map(r => <Repo props={ r }/>);
+		const repos: JSX.Element[] = userRepos.map(r => <Repo key={ r.id } props={ r }/>);
 		
 		return <Container>
 			<Grid container spacing={ 0 } sx={ { height: '92vh' } }>

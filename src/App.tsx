@@ -85,13 +85,11 @@ const App: React.FC = () => {
 			if (profileReq.ok) {
 				const profileRes = await profileReq.json() as GithubUserProfile;
 				
-				setUserProfile(obj => {
-					return {
+				setUserProfile({
 						requestedTimestamp,
 						auth: !!oauthToken,
 						...profileRes
-					};
-				});
+					});
 				
 				// Fetch user repositories
 				const reposReq = await fetch(profileRes.repos_url, {
