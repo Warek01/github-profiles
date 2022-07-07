@@ -55,7 +55,7 @@ const App: React.FC = () => {
 	const setUserProfileCallback = React.useCallback((userName: string, token: string = ''): void => {
 		setOauthToken(token);
 		setLoggedUserName(userName);
-	}, [setLoggedUserName]);
+	}, [setLoggedUserName, setOauthToken]);
 	
 	const logOut = React.useCallback((): void => {
 		removeCookie('user');
@@ -65,9 +65,9 @@ const App: React.FC = () => {
 		navigate('/login');
 	}, [removeCookie, setLoggedUserName, setUserProfile, setOauthToken]);
 	
-	const changeTheme = React.useCallback((theme: Theme) => {
-		setTheme(theme);
-		setCookie('theme', theme);
+	const changeTheme = React.useCallback((newTheme: Theme) => {
+		setTheme(newTheme);
+		setCookie('theme', newTheme,);
 	}, [setTheme, setCookie]);
 	
 	React.useEffect(() => {
@@ -97,7 +97,7 @@ const App: React.FC = () => {
 				
 				setUserProfile({
 					requestedTimestamp,
-					auth: !!oauthToken,
+					authToken: oauthToken,
 					...profileRes
 				});
 				

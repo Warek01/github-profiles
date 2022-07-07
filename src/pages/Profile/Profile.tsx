@@ -1,7 +1,14 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Grid, Avatar, Stack, Collapse, Link, Paper, Typography, Tooltip } from '@mui/material';
-import { LocationOnOutlined, PersonOutlined, InfoOutlined, AccountBoxOutlined } from '@mui/icons-material';
+import {
+	LocationOnOutlined,
+	PersonOutlined,
+	InfoOutlined,
+	AccountBoxOutlined,
+	PaidOutlined,
+	Twitter
+} from '@mui/icons-material';
 
 import { UserProfile } from '../../types';
 import GitHubRepo from '../../types/GitHubRepo';
@@ -17,6 +24,22 @@ type ProfileProps = {
 const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 	const navigate = useNavigate();
 	
+	const avatarSize = React.useMemo(() => {
+		return {
+			width: {
+				lg: '128px',
+				md: '128px',
+				sm: '96px',
+				xs: '64px'
+			}, height: {
+				lg: '128px',
+				md: '128px',
+				sm: '96px',
+				xs: '64px'
+			}
+		};
+	}, []);
+	
 	React.useEffect(() => {
 		if (userProfile) {
 		
@@ -27,8 +50,9 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 	
 	if (userProfile) {
 		const user = userProfile;
-		const isAuth = user.auth;
-		console.log(userRepos[0]);
+		const isAuth = !!user.authToken;
+		
+		console.log(user);
 		
 		const repos: JSX.Element[] = userRepos.map(r => <Repo key={ r.id } props={ r }/>);
 		
@@ -47,7 +71,7 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 							<Avatar
 								src={ user.avatar_url || '' }
 								alt={ user.login }
-								sx={ { width: '128px', height: '128px', margin: '3vh 0' } }
+								sx={ { ...avatarSize, margin: '3vh 0' } }
 							>
 								{ user.login[0] }
 							</Avatar>
@@ -77,6 +101,18 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 							{ user.location }
 						</Collapse>
 					</Grid>
+					<Grid item>
+						<Collapse in={ isAuth }>
+							<PaidOutlined sx={ { fontSize: '1em', marginRight: '5px' } }/>
+							Plan: { user.plan?.name }
+						</Collapse>
+					</Grid>
+					<Grid item>
+						<Collapse in={ isAuth && !!user.twitter_username }>
+							<Twitter sx={ { fontSize: '1em', marginRight: '5px' } }/>
+							{ user.twitter_username }
+						</Collapse>
+					</Grid>
 				</Grid>
 				{ /* Repos */ }
 				<Grid item xs={ 7 } display={ 'flex' } alignItems={ 'center' } justifyContent={ 'stretch' }>
@@ -91,7 +127,7 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 						} }
 					>
 						<Paper sx={ { textAlign: 'center' } } elevation={ 2 }>
-							{ user.name }'s repositories
+							{ user.name.split(' ')[0] }'s repositories
 						</Paper>
 						{ repos }
 					</Stack>

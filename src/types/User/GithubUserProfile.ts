@@ -21,6 +21,14 @@ export default interface GithubUserProfile {
 	name: string;
 	node_id: string;
 	organizations_url: string | null;
+	owned_private_repos: number | null;
+	plan: {
+		collaborators: number;
+		name: string;
+		private_repos: number;
+		space: number;
+	} | null;
+	private_gists: number | null;
 	public_gists: number;
 	public_repos: number;
 	received_events_url: string | null;
@@ -28,7 +36,9 @@ export default interface GithubUserProfile {
 	site_admin: boolean;
 	starred_url: string | null;
 	subscriptions_url: string | null;
+	total_private_repos: number | null;
 	twitter_username: string | null;
+	two_factor_authentication: boolean | null;
 	type: string;
 	updated_at: string;
 	url: string;
