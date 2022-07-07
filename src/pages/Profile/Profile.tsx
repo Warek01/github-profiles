@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Grid, Avatar, Stack, Collapse, Link, Paper, Typography } from '@mui/material';
-import { LocationOnOutlined, PersonOutlined, InfoOutlined } from '@mui/icons-material';
+import { Container, Grid, Avatar, Stack, Collapse, Link, Paper, Typography, Tooltip } from '@mui/material';
+import { LocationOnOutlined, PersonOutlined, InfoOutlined, AccountBoxOutlined } from '@mui/icons-material';
 
 import { UserProfile } from '../../types';
 import GitHubRepo from '../../types/GitHubRepo';
@@ -43,16 +43,19 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 					flexDirection={ 'column' }
 				>
 					<Grid item display={ 'flex' } justifyContent={ 'center' }>
-						<Avatar
-							src={ user.avatar_url || '' }
-							alt={ user.login }
-							sx={ { width: '128px', height: '128px', margin: '3vh 0' } }
-						>
-							{ user.login[0] }
-						</Avatar>
+						<Tooltip title={ user.login }>
+							<Avatar
+								src={ user.avatar_url || '' }
+								alt={ user.login }
+								sx={ { width: '128px', height: '128px', margin: '3vh 0' } }
+							>
+								{ user.login[0] }
+							</Avatar>
+						</Tooltip>
 					</Grid>
 					<Grid item>
 						<Typography component={ 'span' }>
+							<AccountBoxOutlined sx={ { fontSize: '1em', marginRight: '5px' } }/>
 							{ user.name } <Link href={ `https://github.com/${ user.login }` }>@{ user.login }</Link>
 						</Typography>
 					</Grid>
@@ -88,7 +91,7 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 						} }
 					>
 						<Paper sx={ { textAlign: 'center' } } elevation={ 2 }>
-							{ user.login }'s repositories
+							{ user.name }'s repositories
 						</Paper>
 						{ repos }
 					</Stack>

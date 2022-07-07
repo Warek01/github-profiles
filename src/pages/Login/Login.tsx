@@ -156,7 +156,6 @@ const Login: React.FC<LoginProps> = ({
 		
 		<PrevUsers
 			logFromUser={ logFromUser }
-			addRegisteredUser={ addRegisteredUser }
 			removeRegisteredUser={ removeRegisteredUser }
 			getRegisteredUsers={ getRegisteredUsers }
 			customWidth={ cardWidth }

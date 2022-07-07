@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Container, Button, Grid, Box, Switch, FormControlLabel } from '@mui/material';
+import { Container, Button, Grid, Box, Switch, FormControlLabel, Collapse } from '@mui/material';
 import { LightMode, DarkMode, Logout, GitHub } from '@mui/icons-material';
 import { grey } from '@mui/material/colors';
 
@@ -16,8 +16,22 @@ const Header: React.FC<HeaderProps> = ({ setTheme, logOut, loggedIn, theme }) =>
 	
 	return <Box sx={ { height: '8vh', borderBottom: '1px solid', borderColor: grey[400] } }>
 		<Container sx={ { height: '100%' } }>
-			<Grid container sx={ { height: '100%' } } alignItems={ 'center' }>
-				<GitHub color={ 'primary' } fontSize={ 'large' }/>
+			<Grid
+				container
+				sx={ { height: '100%' } }
+				display={ 'flex' }
+				justifyContent={ 'space-between' }
+				alignItems={ 'center' }
+			>
+				<Box>
+					<GitHub color={ 'primary' } fontSize={ 'large' }/>
+					<FormControlLabel control={ <Switch
+						onChange={ () => setTheme(theme === 'light' ? 'dark' : 'light') }
+						checked={ theme === 'dark' }
+					/> }
+					                  label={ themeIcon }
+					                  sx={ { marginLeft: '10px' } }/>
+				</Box>
 				<Button
 					onClick={ logOut }
 					variant={ 'contained' }
@@ -27,11 +41,6 @@ const Header: React.FC<HeaderProps> = ({ setTheme, logOut, loggedIn, theme }) =>
 				>
 					log out
 				</Button>
-				<FormControlLabel control={ <Switch
-					onChange={ () => setTheme(theme === 'light' ? 'dark' : 'light') }
-					checked={ theme === 'dark' }
-				/> }
-				                  label={ themeIcon }/>
 			</Grid>
 		</Container>
 	</Box>;

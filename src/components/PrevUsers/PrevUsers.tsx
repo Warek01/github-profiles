@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { IconButton, Button, Stack, Paper, Box, Grid } from '@mui/material';
-import { Delete } from '@mui/icons-material';
+import { IconButton, Button, Grid, Paper, Box, Stack } from '@mui/material';
+import { Delete, DoDisturbOutlined } from '@mui/icons-material';
+
 import { customScrollbar } from '../../Themes';
 
 type PrevUsersProps = {
 	logFromUser: (userName: string) => void;
 	getRegisteredUsers: () => string[];
-	addRegisteredUser: (name: string) => void;
 	removeRegisteredUser: (name: string) => void;
 	maxHeight: string;
 	customWidth: object;
@@ -16,7 +16,6 @@ type PrevUsersProps = {
 const PrevUsers: React.FC<PrevUsersProps> = ({
 	                                             logFromUser,
 	                                             getRegisteredUsers,
-	                                             addRegisteredUser,
 	                                             removeRegisteredUser,
 	                                             maxHeight = '400px',
 	                                             customWidth = {},
@@ -41,8 +40,9 @@ const PrevUsers: React.FC<PrevUsersProps> = ({
 		</IconButton>
 	</Paper>);
 	
-	const noUsersElement = <Box p={ 0 } m={ 0 }>
+	const noUsersElement: JSX.Element = <Box p={ 0 } m={ 0 }>
 		<Paper sx={ { width: '50%', margin: '16px auto 0 auto' } }>
+			<DoDisturbOutlined sx={ { fontSize: '1em', marginRight: '3px' } }/>
 			None
 		</Paper>
 	</Box>;
@@ -60,3 +60,4 @@ const PrevUsers: React.FC<PrevUsersProps> = ({
 };
 
 export default PrevUsers;
+
