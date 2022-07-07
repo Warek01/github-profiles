@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { UserProfile } from '../../types';
 import { useNavigate } from 'react-router-dom';
-import { Container, Grid, Avatar, Stack, Collapse, Link, Paper } from '@mui/material';
+import { Container, Grid, Avatar, Stack, Collapse, Link, Paper, Typography } from '@mui/material';
 import { LocationOnOutlined, PersonOutlined, InfoOutlined } from '@mui/icons-material';
 
+import { UserProfile } from '../../types';
 import GitHubRepo from '../../types/GitHubRepo';
-import { customScrollbar } from '../../Theme';
+import { customScrollbar } from '../../Themes';
 
 import Repo from './Repo';
 
@@ -28,7 +28,7 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 	if (userProfile) {
 		const user = userProfile;
 		const isAuth = user.auth;
-		console.log(userRepos[0])
+		console.log(userRepos[0]);
 		
 		const repos: JSX.Element[] = userRepos.map(r => <Repo key={ r.id } props={ r }/>);
 		
@@ -52,12 +52,16 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 						</Avatar>
 					</Grid>
 					<Grid item>
-						{ user.name } <Link href={ `https://github.com/${ user.login }` }>@{ user.login }</Link>
+						<Typography component={ 'span' }>
+							{ user.name } <Link href={ `https://github.com/${ user.login }` }>@{ user.login }</Link>
+						</Typography>
 					</Grid>
 					<Grid item>
 						<Collapse in={ !!user.bio }>
-							<InfoOutlined sx={ { fontSize: '1em', marginRight: '5px' } }/>
-							{ user.bio }
+							<Typography>
+								<InfoOutlined sx={ { fontSize: '1em', marginRight: '5px' } }/>
+								{ user.bio }
+							</Typography>
 						</Collapse>
 					</Grid>
 					<Grid item>

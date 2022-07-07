@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { ThemeProvider } from '@mui/material';
+import { ThemeProvider, CssBaseline } from '@mui/material';
 
 import Login from './pages/Login';
 import Profile from './pages/Profile';
@@ -9,7 +9,7 @@ import NotFound from './pages/NotFound';
 import Header from './components/Header';
 
 import { UserProfile, GithubUserProfile } from './types';
-import globalTheme from './Theme';
+import { darkTheme, lightTheme } from './Themes';
 import Blank from './pages/Blank';
 import GitHubRepo from './types/GitHubRepo';
 
@@ -19,12 +19,17 @@ const App: React.FC = () => {
 	
 	const path = location.pathname;
 	
-	const [cookies, setCookie, removeCookie] = useCookies(['user', 'is-auth']);
+	const [cookies, setCookie, removeCookie] = useCookies<'user' | 'is-auth' | 'theme', {
+		user?: string;
+		'is-auth'?: string;
+		theme?: Theme;
+	}>(['user', 'is-auth', 'theme']);
 	const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
 	const [userRepos, setUserRepos] = React.useState<GitHubRepo[] | []>([]);
 	const [loggedUserName, setLoggedUserName] = React.useState<string>(cookies['user']?.split(',')[0] || '');
 	const [oauthToken, setOauthToken] = React.useState<string>(cookies['user']?.split(',')[1] || '');
 	const [loginErrMessage, setLoginErrMessage] = React.useState<string>('');
+	const [theme, setTheme] = React.useState<Theme>(cookies['theme'] || 'light');
 	
 	const isFocused = React.useCallback((element: Element): boolean => document.activeElement! === element, []);
 	
@@ -60,6 +65,11 @@ const App: React.FC = () => {
 		navigate('/login');
 	}, [removeCookie, setLoggedUserName, setUserProfile, setOauthToken]);
 	
+	const changeTheme = React.useCallback((theme: Theme) => {
+		setTheme(theme);
+		setCookie('theme', theme);
+	}, [setTheme, setCookie]);
+	
 	React.useEffect(() => {
 		if (!loggedUserName && path === '/')
 			navigate('/login');
@@ -86,10 +96,10 @@ const App: React.FC = () => {
 				const profileRes = await profileReq.json() as GithubUserProfile;
 				
 				setUserProfile({
-						requestedTimestamp,
-						auth: !!oauthToken,
-						...profileRes
-					});
+					requestedTimestamp,
+					auth: !!oauthToken,
+					...profileRes
+				});
 				
 				// Fetch user repositories
 				const reposReq = await fetch(profileRes.repos_url, {
@@ -132,9 +142,15 @@ const App: React.FC = () => {
 		}
 	}, [userProfile, oauthToken]);
 	
-	return <ThemeProvider theme={ globalTheme }>
-		<div className={ 'container' }>
-			<Header logOut={ logOut } loggedIn={ !!userProfile }/>
+	return <ThemeProvider theme={ theme === 'light' ? lightTheme : darkTheme }>
+		<CssBaseline/>
+		<div id={ 'app' }>
+			<Header
+				logOut={ logOut }
+				loggedIn={ !!userProfile }
+				setTheme={ changeTheme }
+				theme={ theme }
+			/>
 			<Routes>
 				<Route path={ '/' } element={ <Blank/> }/>
 				<Route path={ 'login' } element={ <Login

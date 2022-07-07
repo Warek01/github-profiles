@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IconButton, Button, Stack, Paper, Box, Grid } from '@mui/material';
 import { Delete } from '@mui/icons-material';
-import { customScrollbar } from '../../Theme';
+import { customScrollbar } from '../../Themes';
 
 type PrevUsersProps = {
 	logFromUser: (userName: string) => void;
