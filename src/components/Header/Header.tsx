@@ -10,9 +10,10 @@ type HeaderProps = {
 	switchTheme: () => void
 	logOut: () => void
 	loggedIn: boolean
+	updateUserProfile: () => void
 }
 
-const Header: React.FC<HeaderProps> = ({ isDarkTheme, switchTheme, logOut, loggedIn }) => {
+const Header: React.FC<HeaderProps> = ({ isDarkTheme, switchTheme, logOut, loggedIn, updateUserProfile }) => {
 	return <Box sx={ { height: '8vh', borderBottom: '1px solid', borderColor: grey[400] } }>
 		<Container sx={ { height: '100%' } }>
 			<Grid
@@ -34,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({ isDarkTheme, switchTheme, logOut, logge
 						log out
 					</Button>
 					<Button /* Re-fetch user data button */
-						// onClick={  }
+						onClick={ updateUserProfile }
 						variant={ 'contained' }
 						size={ 'small' }
 						startIcon={ <Loop /> }

@@ -39,11 +39,11 @@ const App: React.FC = () => {
 	const addRegisteredUser = React.useCallback((login: string): void => {
 		if (!login) return
 		const users = registeredUsers
-		if (users.find(value => value === login)) return
+		if (users.find(user => user === login)) return
 		saveRegisteredUsers([...users, login])
 	}, [saveRegisteredUsers, registeredUsers])
 	
-	const removeRegisteredUser = React.useCallback((login: string) => saveRegisteredUsers(registeredUsers.filter(value => value !== login)),
+	const removeRegisteredUser = React.useCallback((login: string) => saveRegisteredUsers(registeredUsers.filter(user => user !== login)),
 		[saveRegisteredUsers, registeredUsers])
 	
 	const setUserProfileCallback = React.useCallback((userName: string, token: string = ''): void => {
@@ -57,6 +57,16 @@ const App: React.FC = () => {
 		setOauthToken('')
 		navigate('/login')
 	}, [setUserProfile])
+	
+	const updateUserProfile = React.useCallback(() => {
+		if (!userProfile) return
+		(async () => {
+			const userData = await fetchUserProfile(userProfile.login, userProfile.authToken) as UserProfile
+			setUserProfile(userData)
+			
+			console.log('Profile updated,', userData.login)
+		})()
+	}, [userProfile, setUserProfile])
 	
 	React.useEffect(() => {
 		if (!loginUserName && path === '/')
@@ -91,7 +101,7 @@ const App: React.FC = () => {
 					setOauthToken('')
 			}
 		})()
-	}, [loginUserName, userProfile])
+	}, [loginUserName])
 	
 	React.useEffect(() => {
 		if (userProfile && (path === '/' || path === '/login')) {
@@ -99,7 +109,6 @@ const App: React.FC = () => {
 			navigate('/profile')
 		}
 	}, [userProfile])
-	
 	
 	return <ThemeProvider theme={ isDarkTheme ? darkTheme : lightTheme }>
 		<CssBaseline />
@@ -109,6 +118,7 @@ const App: React.FC = () => {
 				loggedIn={ !!userProfile }
 				isDarkTheme={ isDarkTheme }
 				switchTheme={ () => switchTheme(prev => !prev) }
+				updateUserProfile={ updateUserProfile }
 			/>
 			<Routes>
 				<Route path={ '/' } element={ <Blank /> } />
