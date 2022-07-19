@@ -1,5 +1,5 @@
-import { createTheme, Zoom, Components } from '@mui/material';
-import { blue } from '@mui/material/colors';
+import { createTheme, Zoom, Components } from '@mui/material'
+import { blue } from '@mui/material/colors'
 
 const componentsOverride: Components = {
 	MuiTooltip: {
@@ -9,7 +9,7 @@ const componentsOverride: Components = {
 			placement: 'top',
 			TransitionComponent: Zoom
 		}
-	},
+	}
 	// MuiTypography: {
 	// 	styleOverrides: {
 	// 		root: {
@@ -19,7 +19,7 @@ const componentsOverride: Components = {
 	// 		}
 	// 	}
 	// }
-};
+}
 
 const customScrollbar = {
 	'&::-webkit-scrollbar': {
@@ -36,20 +36,20 @@ const customScrollbar = {
 		backgroundColor: blue[100],
 		borderRadius: '4px'
 	}
-};
+}
 
 const lightTheme = createTheme({
 	palette: {
 		mode: 'light'
 	},
 	components: componentsOverride
-});
+})
 
 const darkTheme = createTheme({
 	palette: {
 		mode: 'dark'
 	},
 	components: componentsOverride
-});
+})
 
-export { customScrollbar, darkTheme, lightTheme };
+export { customScrollbar, darkTheme, lightTheme }

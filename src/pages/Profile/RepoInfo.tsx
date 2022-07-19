@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import * as React from 'react'
+import { Box, Grid, Paper, Typography } from '@mui/material'
 
-import { GitHubRepo } from '../../types';
+import { GitHubRepo } from '../../types'
 
 type RepoInfoProps = {
-	repo: GitHubRepo;
+	repo: GitHubRepo
 }
 
 const RepoInfo: React.FC<RepoInfoProps> = ({ repo }) => {
@@ -15,7 +15,7 @@ const RepoInfo: React.FC<RepoInfoProps> = ({ repo }) => {
 		<Grid item>
 			{ repo.description }
 		</Grid>
-	</>;
-};
+	</>
+}
 
-export default RepoInfo;
+export default RepoInfo

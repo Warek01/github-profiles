@@ -1,16 +1,16 @@
-import * as React from 'react';
-import { IconButton, Button, Grid, Paper, Box, Stack } from '@mui/material';
-import { Delete, DoDisturbOutlined } from '@mui/icons-material';
+import * as React from 'react'
+import { IconButton, Button, Grid, Paper, Box, Stack } from '@mui/material'
+import { Delete, DoDisturbOutlined } from '@mui/icons-material'
 
-import { customScrollbar } from '../../Themes';
+import { customScrollbar } from '../../Themes'
 
 type PrevUsersProps = {
-	logFromUser: (userName: string) => void;
-	getRegisteredUsers: () => string[];
-	removeRegisteredUser: (name: string) => void;
-	maxHeight: string;
-	customWidth: object;
-	margin: string;
+	logFromUser: (userName: string) => void
+	getRegisteredUsers: () => string[]
+	removeRegisteredUser: (name: string) => void
+	maxHeight: string
+	customWidth: object
+	margin: string
 }
 
 const PrevUsers: React.FC<PrevUsersProps> = ({
@@ -21,7 +21,7 @@ const PrevUsers: React.FC<PrevUsersProps> = ({
 	                                             customWidth = {},
 	                                             margin = '0'
                                              }) => {
-	const [deletedUser, setDeletedUser] = React.useState<string>('');
+	const [deletedUser, setDeletedUser] = React.useState<string>('')
 	
 	const users = getRegisteredUsers().map(login => <Paper
 		key={ login }
@@ -33,19 +33,19 @@ const PrevUsers: React.FC<PrevUsersProps> = ({
 			</span>
 		</Button>
 		<IconButton color={ 'primary' } onClick={ () => {
-			setDeletedUser(login);
-			removeRegisteredUser(login);
+			setDeletedUser(login)
+			removeRegisteredUser(login)
 		} }>
-			<Delete/>
+			<Delete />
 		</IconButton>
-	</Paper>);
+	</Paper>)
 	
 	const noUsersElement: JSX.Element = <Box p={ 0 } m={ 0 }>
 		<Paper sx={ { width: '50%', margin: '16px auto 0 auto' } }>
-			<DoDisturbOutlined sx={ { fontSize: '1em', marginRight: '3px' } }/>
+			<DoDisturbOutlined sx={ { fontSize: '1em', marginRight: '3px' } } />
 			None
 		</Paper>
-	</Box>;
+	</Box>
 	
 	return <Grid container justifyContent={ 'center' } sx={ { margin, maxHeight } }>
 		<Box p={ 1 } sx={ { overflow: 'auto', maxHeight, ...customWidth, ...customScrollbar } }>
@@ -56,8 +56,8 @@ const PrevUsers: React.FC<PrevUsersProps> = ({
 				{ users.length ? users : noUsersElement }
 			</Stack>
 		</Box>
-	</Grid>;
-};
+	</Grid>
+}
 
-export default PrevUsers;
+export default PrevUsers
 

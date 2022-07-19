@@ -1,13 +1,13 @@
-import * as React from 'react';
-import { Paper, Link, Box, Button, IconButton, Typography, Tooltip, Zoom } from '@mui/material';
-import { teal } from '@mui/material/colors';
-import { RemoveRedEyeOutlined } from '@mui/icons-material';
+import * as React from 'react'
+import { Paper, Link, Box, Button, IconButton, Typography, Tooltip, Zoom } from '@mui/material'
+import { teal } from '@mui/material/colors'
+import { RemoveRedEyeOutlined } from '@mui/icons-material'
 
-import GitHubRepo from '../../types/GitHubRepo';
+import GitHubRepo from '../../types/GitHubRepo'
 
 type RepoProps = {
-	repo: GitHubRepo;
-	setShowedRepo: (repo: GitHubRepo | null) => void;
+	repo: GitHubRepo
+	setShowedRepo: (repo: GitHubRepo | null) => void
 };
 
 const Repo: React.FC<RepoProps> = ({ repo, setShowedRepo }) => {
@@ -53,12 +53,12 @@ const Repo: React.FC<RepoProps> = ({ repo, setShowedRepo }) => {
 			<Tooltip title={ 'Watchers' }>
 				<Typography component={ 'span' } sx={ { display: 'inline-flex', alignItems: 'center' } }>
 					{ repo.watchers_count }
-					<RemoveRedEyeOutlined fontSize={ 'inherit' }/>
+					<RemoveRedEyeOutlined fontSize={ 'inherit' } />
 				</Typography>
 			</Tooltip>
 		</Box>
-	</Paper>;
-};
+	</Paper>
+}
 
-export default Repo;
+export default Repo
 

@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Container, Grid, Avatar, Stack, Collapse, Link, Paper, Typography, Tooltip } from '@mui/material';
+import * as React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Container, Grid, Avatar, Stack, Collapse, Link, Paper, Typography, Tooltip } from '@mui/material'
 import {
 	LocationOnOutlined,
 	PersonOutlined,
@@ -8,22 +8,22 @@ import {
 	AccountBoxOutlined,
 	PaidOutlined,
 	Twitter
-} from '@mui/icons-material';
+} from '@mui/icons-material'
 
-import { UserProfile } from '../../types';
-import GitHubRepo from '../../types/GitHubRepo';
-import { customScrollbar } from '../../Themes';
+import { UserProfile } from '../../types'
+import GitHubRepo from '../../types/GitHubRepo'
+import { customScrollbar } from '../../Themes'
 
-import Repo from './Repo';
-import RepoInfo from './RepoInfo';
+import Repo from './Repo'
+import RepoInfo from './RepoInfo'
 
 type ProfileProps = {
-	userProfile: UserProfile | null;
-	userRepos: GitHubRepo[];
+	userProfile: UserProfile | null
+	userRepos: GitHubRepo[]
 }
 
 const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
-	const navigate = useNavigate();
+	const navigate = useNavigate()
 	
 	const avatarSize = React.useMemo(() => {
 		return {
@@ -38,24 +38,24 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 				sm: '96px',
 				xs: '64px'
 			}
-		};
-	}, []);
+		}
+	}, [])
 	
 	React.useEffect(() => {
 		if (userProfile) {
 		
 		} else {
-			navigate('/');
+			navigate('/')
 		}
-	}, []);
+	}, [])
 	
-	const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | null>(null);
+	const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | null>(null)
 	
 	if (userProfile) {
-		const user = userProfile;
-		const isAuth = !!user.authToken;
+		const user = userProfile
+		const isAuth = !!user.authToken
 		
-		const repos: JSX.Element[] = userRepos.map(r => <Repo key={ r.id } repo={ r } setShowedRepo={ setShowedRepo }/>);
+		const repos: JSX.Element[] = userRepos.map(r => <Repo key={ r.id } repo={ r } setShowedRepo={ setShowedRepo } />)
 		
 		return <Container>
 			<Grid container spacing={ 0 } sx={ { height: '92vh' } }>
@@ -80,37 +80,37 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 					</Grid>
 					<Grid item>
 						<Typography component={ 'span' }>
-							<AccountBoxOutlined sx={ { fontSize: '1em', marginRight: '5px' } }/>
+							<AccountBoxOutlined sx={ { fontSize: '1em', marginRight: '5px' } } />
 							{ user.name } <Link href={ `https://github.com/${ user.login }` }>@{ user.login }</Link>
 						</Typography>
 					</Grid>
 					<Grid item>
 						<Collapse in={ !!user.bio }>
 							<Typography>
-								<InfoOutlined sx={ { fontSize: '1em', marginRight: '5px' } }/>
+								<InfoOutlined sx={ { fontSize: '1em', marginRight: '5px' } } />
 								{ user.bio }
 							</Typography>
 						</Collapse>
 					</Grid>
 					<Grid item>
-						<PersonOutlined sx={ { fontSize: '1em', marginRight: '5px' } }/>
+						<PersonOutlined sx={ { fontSize: '1em', marginRight: '5px' } } />
 						{ user.followers } followers, { user.following } following
 					</Grid>
 					<Grid item>
 						<Collapse in={ !!user.location }>
-							<LocationOnOutlined sx={ { fontSize: '1em', marginRight: '5px' } }/>
+							<LocationOnOutlined sx={ { fontSize: '1em', marginRight: '5px' } } />
 							{ user.location }
 						</Collapse>
 					</Grid>
 					<Grid item>
 						<Collapse in={ isAuth }>
-							<PaidOutlined sx={ { fontSize: '1em', marginRight: '5px' } }/>
+							<PaidOutlined sx={ { fontSize: '1em', marginRight: '5px' } } />
 							Plan: { user.plan?.name }
 						</Collapse>
 					</Grid>
 					<Grid item>
 						<Collapse in={ isAuth && !!user.twitter_username }>
-							<Twitter sx={ { fontSize: '1em', marginRight: '5px' } }/>
+							<Twitter sx={ { fontSize: '1em', marginRight: '5px' } } />
 							{ user.twitter_username }
 						</Collapse>
 					</Grid>
@@ -135,14 +135,14 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 				</Grid>
 				{ /* Additional info */ }
 				<Grid item xs={ 2 }>
-					{ showedRepo ? <RepoInfo repo={ showedRepo }/> : null }
+					{ showedRepo ? <RepoInfo repo={ showedRepo } /> : null }
 				</Grid>
 			</Grid>
-		</Container>;
+		</Container>
 		
 	} else {
-		return <h3 className={ 'text-center' }>Redirecting ...</h3>;
+		return <h3 className={ 'text-center' }>Redirecting ...</h3>
 	}
-};
+}
 
-export default Profile;
+export default Profile

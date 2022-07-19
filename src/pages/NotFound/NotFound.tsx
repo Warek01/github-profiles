@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { Grid, Box, Button } from '@mui/material';
-import { red } from '@mui/material/colors';
+import * as React from 'react'
+import { useLocation, Link } from 'react-router-dom'
+import { Grid, Box, Button } from '@mui/material'
+import { red } from '@mui/material/colors'
 
 const NotFound: React.FC = () => {
-	const location = useLocation();
+	const location = useLocation()
 	
 	return <Grid
 		container
@@ -28,7 +28,7 @@ const NotFound: React.FC = () => {
 				</Button>
 			</Link>
 		</Grid>
-	</Grid>;
-};
+	</Grid>
+}
 
-export default NotFound;
+export default NotFound

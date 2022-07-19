@@ -1,16 +1,16 @@
-import * as React from 'react';
-import { Input, Button, Grid, Card, Alert, IconButton, Collapse } from '@mui/material';
-import { Close } from '@mui/icons-material';
+import * as React from 'react'
+import { Input, Button, Grid, Card, Alert, IconButton, Collapse } from '@mui/material'
+import { Close } from '@mui/icons-material'
 
-import PrevUsers from '../../components/PrevUsers';
+import PrevUsers from '../../components/PrevUsers'
 
 type LoginProps = {
-	errorMessage: string;
-	isFocused: (element: Element) => boolean;
-	setUserProfile: (userName: string, token: string) => void;
-	getRegisteredUsers: () => string[];
-	addRegisteredUser: (name: string) => void;
-	removeRegisteredUser: (name: string) => void;
+	errorMessage: string
+	isFocused: (element: Element) => boolean
+	setUserProfile: (userName: string, token: string) => void
+	getRegisteredUsers: () => string[]
+	addRegisteredUser: (name: string) => void
+	removeRegisteredUser: (name: string) => void
 };
 
 const Login: React.FC<LoginProps> = ({
@@ -31,64 +31,64 @@ const Login: React.FC<LoginProps> = ({
 				xs: '75vw',
 				xxs: '85vw'
 			}
-		};
-	}, []);
+		}
+	}, [])
 	
-	const [inputText, setInputText] = React.useState<string>('');
-	const [oauthToken, setOauthToken] = React.useState<string>('');
-	const [oauthInputShown, setOauthInputShown] = React.useState<boolean>(false);
-	const [errorShown, setErrorShown] = React.useState<boolean>(false);
+	const [inputText, setInputText] = React.useState<string>('')
+	const [oauthToken, setOauthToken] = React.useState<string>('')
+	const [oauthInputShown, setOauthInputShown] = React.useState<boolean>(false)
+	const [errorShown, setErrorShown] = React.useState<boolean>(false)
 	
-	const oauthInputRef = React.useRef<HTMLInputElement>(null);
-	const loginInputRef = React.useRef<HTMLInputElement>(null);
+	const oauthInputRef = React.useRef<HTMLInputElement>(null)
+	const loginInputRef = React.useRef<HTMLInputElement>(null)
 	
 	const submit = React.useCallback(() => {
-		const text = inputText.trim();
-		const token = oauthToken.trim();
-		if (!text || (oauthInputShown && !token)) return;
-		setUserProfile(text, token);
-	}, [inputText, setUserProfile, oauthToken]);
+		const text = inputText.trim()
+		const token = oauthToken.trim()
+		if (!text || (oauthInputShown && !token)) return
+		setUserProfile(text, token)
+	}, [inputText, setUserProfile, oauthToken])
 	
 	const onLoginInputChange = React.useCallback(() => {
-		setInputText(loginInputRef.current!.value);
-	}, [setInputText, loginInputRef]);
+		setInputText(loginInputRef.current!.value)
+	}, [setInputText, loginInputRef])
 	
 	const onOauthTokenChange = React.useCallback(() => {
-		setOauthToken(oauthInputRef.current!.value);
-	}, [oauthInputRef, setOauthToken]);
+		setOauthToken(oauthInputRef.current!.value)
+	}, [oauthInputRef, setOauthToken])
 	
 	const logFromUser = React.useCallback((userName: string): void => {
-		setUserProfile(userName, ''); // Must implement auth
-	}, [setUserProfile]);
+		setUserProfile(userName, '') // Must implement auth
+	}, [setUserProfile])
 	
 	const reset = React.useCallback((): void => {
-		setOauthToken('');
-		setInputText('');
-		loginInputRef.current!.focus();
-	}, [setOauthToken, setInputText, loginInputRef]);
+		setOauthToken('')
+		setInputText('')
+		loginInputRef.current!.focus()
+	}, [setOauthToken, setInputText, loginInputRef])
 	
 	const handleInputFormKeydown = React.useCallback((event: React.KeyboardEvent<HTMLElement>): void => {
 		switch (event.key) {
 			case 'Enter':
-				event.preventDefault();
-				submit();
-				break;
+				event.preventDefault()
+				submit()
+				break
 			case 'Escape': {
-				event.preventDefault();
+				event.preventDefault()
 				if (isFocused(oauthInputRef.current!) && !oauthInputRef.current!.value) {
-					setOauthInputShown(false);
+					setOauthInputShown(false)
 				}
-				break;
+				break
 			}
 		}
-	}, [oauthToken, submit, setOauthInputShown]);
+	}, [oauthToken, submit, setOauthInputShown])
 	
 	const errorElement = <Collapse in={ errorShown } children={ <Alert severity={ 'error' } action={ <IconButton
 		size={ 'small' }
 		onClick={ () => setErrorShown(false) }
-	><Close fontSize={ 'inherit' }/></IconButton> }>
+	><Close fontSize={ 'inherit' } /></IconButton> }>
 		{ errorMessage }
-	</Alert> }/>;
+	</Alert> } />
 	
 	const authSectionElement = oauthInputShown ? <Input
 			type={ 'password' }
@@ -100,19 +100,19 @@ const Login: React.FC<LoginProps> = ({
 		/> :
 		<Button onClick={ () => setOauthInputShown(true) }>
 			oauth key
-		</Button>;
+		</Button>
 	
 	React.useEffect(() => {
 		if (oauthInputShown) {
-			oauthInputRef.current!.focus();
+			oauthInputRef.current!.focus()
 		} else {
-			setOauthToken('');
+			setOauthToken('')
 		}
-	}, [oauthInputShown]);
+	}, [oauthInputShown])
 	
 	React.useEffect(() => {
-		setErrorShown(!!errorMessage);
-	}, [errorMessage]);
+		setErrorShown(!!errorMessage)
+	}, [errorMessage])
 	
 	return <>
 		<Grid container justifyContent={ 'center' } sx={ { height: '40vh', margin: '4vh 0' } }>
@@ -162,8 +162,8 @@ const Login: React.FC<LoginProps> = ({
 			maxHeight={ '40vh' }
 			margin={ '4vh 0' }
 		/>
-	</>;
-};
+	</>
+}
 
-export default Login;
+export default Login
 

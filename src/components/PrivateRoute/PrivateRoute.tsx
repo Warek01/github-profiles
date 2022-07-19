@@ -1,11 +1,11 @@
-import * as React from 'react';
+import * as React from 'react'
 
 type PrivateRouteProps = {
-  //
+	//
 };
 
 const PrivateRoute: React.FC<any> = () => {
-  return <div>PrivateRoute</div>;
-};
+	return <div>PrivateRoute</div>
+}
 
-export default PrivateRoute;
+export default PrivateRoute
