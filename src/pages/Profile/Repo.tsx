@@ -1,56 +1,60 @@
 import * as React from 'react';
 import { Paper, Link, Box, Button, IconButton, Typography, Tooltip, Zoom } from '@mui/material';
-import { PublicOutlined, ShieldOutlined, DownloadOutlined, ContentCopy } from '@mui/icons-material';
 import { teal } from '@mui/material/colors';
+import { RemoveRedEyeOutlined } from '@mui/icons-material';
 
 import GitHubRepo from '../../types/GitHubRepo';
 
 type RepoProps = {
-	props: GitHubRepo;
+	repo: GitHubRepo;
+	setShowedRepo: (repo: GitHubRepo | null) => void;
 };
 
-const Repo: React.FC<RepoProps> = ({ props }) => {
-	const description = props.description ? (props.description.length > 40 ? `${ props.description.slice(0, 40) }...` : props.description) : '';
+const Repo: React.FC<RepoProps> = ({ repo, setShowedRepo }) => {
+	// const description = repo.description ? (repo.description.length > 50 ? `${ repo.description.slice(0, 50) }...` : repo.description) : '';
 	
 	return <Paper
 		sx={ {
-			minHeight: '100px',
-			padding: '10px'
+			maxHeight: 'none',
+			height: 'auto',
+			padding: '10px',
+			cursor: 'pointer'
 		} }
+		onClick={ () => setShowedRepo(repo) }
 	>
 		<Box mx={ 1 } sx={ {
+			height: 'auto',
 			'&>:not(:first-of-type)': {
 				marginLeft: '1ch'
 			}
 		} }>
 			<Tooltip title={ 'Repository' }>
 				<Typography component={ 'span' }>
-					<Link href={ props.html_url }>
-						{ props.name }
+					<Link href={ repo.html_url }>
+						{ repo.name }
 					</Link>
 				</Typography>
 			</Tooltip>
 			<Tooltip title={ 'Language' }>
 				<Typography component={ 'span' } sx={ { color: teal[400] } }>
-					{ props.language }
+					{ repo.language }
 				</Typography>
 			</Tooltip>
 			<Tooltip title={ 'Repo size' }>
 				<Typography component={ 'span' }>
-					({ props.size } KB)
+					({ repo.size } KB)
 				</Typography>
 			</Tooltip>
 			<Tooltip title={ 'Description' }>
 				<Typography component={ 'span' }>
-					{ description }
+					{ repo.description }
 				</Typography>
 			</Tooltip>
-		</Box>
-		<Box mx={ 1 }>
-			<Tooltip title={ 'Copy git url' }>
-				<IconButton onClick={ () => navigator.clipboard.writeText(props.git_url) } size={ 'small' }>
-					<ContentCopy/>
-				</IconButton>
+			<Tooltip title={ 'Watchers' }>
+				<Typography component={ 'span' } sx={ { display: 'inline-flex', alignItems: 'center' } }>
+					{ repo.watchers_count }
+					<RemoveRedEyeOutlined fontSize={ 'inherit' }/>
+				</Typography>
 			</Tooltip>
 		</Box>
 	</Paper>;

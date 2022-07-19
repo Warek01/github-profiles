@@ -1,8 +1,8 @@
-import React from 'react';
+import * as React from 'react';
 import { Input, Button, Grid, Card, Alert, IconButton, Collapse } from '@mui/material';
-import PrevUsers from '../../components/PrevUsers';
 import { Close } from '@mui/icons-material';
 
+import PrevUsers from '../../components/PrevUsers';
 
 type LoginProps = {
 	errorMessage: string;

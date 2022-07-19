@@ -9,7 +9,16 @@ const componentsOverride: Components = {
 			placement: 'top',
 			TransitionComponent: Zoom
 		}
-	}
+	},
+	// MuiTypography: {
+	// 	styleOverrides: {
+	// 		root: {
+	// 			display: 'inline-flex',
+	// 			alignItems: 'center',
+	// 			wordWrap: 'break-word'
+	// 		}
+	// 	}
+	// }
 };
 
 const customScrollbar = {

@@ -15,6 +15,7 @@ import GitHubRepo from '../../types/GitHubRepo';
 import { customScrollbar } from '../../Themes';
 
 import Repo from './Repo';
+import RepoInfo from './RepoInfo';
 
 type ProfileProps = {
 	userProfile: UserProfile | null;
@@ -48,13 +49,13 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 		}
 	}, []);
 	
+	const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | null>(null);
+	
 	if (userProfile) {
 		const user = userProfile;
 		const isAuth = !!user.authToken;
 		
-		console.log(user);
-		
-		const repos: JSX.Element[] = userRepos.map(r => <Repo key={ r.id } props={ r }/>);
+		const repos: JSX.Element[] = userRepos.map(r => <Repo key={ r.id } repo={ r } setShowedRepo={ setShowedRepo }/>);
 		
 		return <Container>
 			<Grid container spacing={ 0 } sx={ { height: '92vh' } }>
@@ -134,7 +135,7 @@ const Profile: React.FC<ProfileProps> = ({ userProfile, userRepos }) => {
 				</Grid>
 				{ /* Additional info */ }
 				<Grid item xs={ 2 }>
-					Additional info
+					{ showedRepo ? <RepoInfo repo={ showedRepo }/> : null }
 				</Grid>
 			</Grid>
 		</Container>;

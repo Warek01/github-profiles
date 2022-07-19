@@ -1,6 +1,6 @@
 import UserProfile from './User/UserProfile';
-import UserRepo from './User/UserRepo';
 import GithubUserProfile from './User/GithubUserProfile';
 import GitHubHttpError from './GitHubHttpError';
+import GitHubRepo from './GitHubRepo'
 
-export type { UserProfile, UserRepo, GithubUserProfile, GitHubHttpError };
+export type { UserProfile, GithubUserProfile, GitHubHttpError, GitHubRepo };
