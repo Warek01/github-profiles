@@ -4,6 +4,7 @@ module.exports = [
 	'notest',
 	'functional',
 	'singlequote',
+	'nosemi',
 	{
 		'output': './src/components/'
 	}
