@@ -14,6 +14,8 @@ import GitHubRepo from './types/GitHubRepo'
 
 import { darkTheme, lightTheme } from './Themes'
 
+import { useLocalStorage } from './hooks'
+
 const App: React.FC = () => {
 	const navigate = useNavigate()
 	const location = useLocation()
@@ -32,26 +34,22 @@ const App: React.FC = () => {
 	const [loginErrMessage, setLoginErrMessage] = React.useState<string>('')
 	const [theme, setTheme] = React.useState<Theme>(cookies['theme'] || 'light')
 	
+	const [registeredUsers, setRegisteredUsers] = useLocalStorage<string[]>('registered-users', [])
+	
 	const isFocused = React.useCallback((element: Element): boolean => document.activeElement! === element, [])
 	
-	const getRegisteredUsers = React.useCallback((): string[] => {
-		return JSON.parse(localStorage.getItem('registered-users') || '[]')
-	}, [])
-	
-	const saveRegisteredUsers = React.useCallback((logins: string[]): void => {
-		localStorage.setItem('registered-users', JSON.stringify(logins))
-	}, [])
+	const saveRegisteredUsers = React.useCallback((logins: string[]) => setRegisteredUsers(logins),
+		[setRegisteredUsers])
 	
 	const addRegisteredUser = React.useCallback((login: string): void => {
 		if (!login) return
-		const users = getRegisteredUsers()
+		const users = registeredUsers
 		if (users.find(value => value === login)) return
 		saveRegisteredUsers([...users, login])
-	}, [saveRegisteredUsers, getRegisteredUsers])
+	}, [saveRegisteredUsers, registeredUsers])
 	
-	const removeRegisteredUser = React.useCallback((login: string): void => {
-		saveRegisteredUsers(getRegisteredUsers().filter(value => value !== login))
-	}, [saveRegisteredUsers, getRegisteredUsers])
+	const removeRegisteredUser = React.useCallback((login: string) => saveRegisteredUsers(registeredUsers.filter(value => value !== login)),
+		[saveRegisteredUsers, registeredUsers])
 	
 	const setUserProfileCallback = React.useCallback((userName: string, token: string = ''): void => {
 		setOauthToken(token)
@@ -158,9 +156,8 @@ const App: React.FC = () => {
 					errorMessage={ loginErrMessage }
 					isFocused={ isFocused }
 					setUserProfile={ setUserProfileCallback }
-					addRegisteredUser={ addRegisteredUser }
 					removeRegisteredUser={ removeRegisteredUser }
-					getRegisteredUsers={ getRegisteredUsers }
+					registeredUsers={ registeredUsers }
 				/> } />
 				<Route path={ 'profile' } element={ <Profile userProfile={ userProfile } userRepos={ userRepos } /> } />
 				<Route path={ '*' } element={ <NotFound /> } />

@@ -8,8 +8,7 @@ type LoginProps = {
 	errorMessage: string
 	isFocused: (element: Element) => boolean
 	setUserProfile: (userName: string, token: string) => void
-	getRegisteredUsers: () => string[]
-	addRegisteredUser: (name: string) => void
+	registeredUsers: string[]
 	removeRegisteredUser: (name: string) => void
 };
 
@@ -17,8 +16,7 @@ const Login: React.FC<LoginProps> = ({
 	                                     errorMessage,
 	                                     isFocused,
 	                                     setUserProfile,
-	                                     addRegisteredUser,
-	                                     getRegisteredUsers,
+	                                     registeredUsers,
 	                                     removeRegisteredUser
                                      }) => {
 	const cardWidth = React.useMemo(() => {
@@ -157,7 +155,7 @@ const Login: React.FC<LoginProps> = ({
 		<PrevUsers
 			logFromUser={ logFromUser }
 			removeRegisteredUser={ removeRegisteredUser }
-			getRegisteredUsers={ getRegisteredUsers }
+			registeredUsers={ registeredUsers }
 			customWidth={ cardWidth }
 			maxHeight={ '40vh' }
 			margin={ '4vh 0' }

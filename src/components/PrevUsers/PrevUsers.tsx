@@ -6,7 +6,7 @@ import { customScrollbar } from '../../Themes'
 
 type PrevUsersProps = {
 	logFromUser: (userName: string) => void
-	getRegisteredUsers: () => string[]
+	registeredUsers: string[]
 	removeRegisteredUser: (name: string) => void
 	maxHeight: string
 	customWidth: object
@@ -15,7 +15,7 @@ type PrevUsersProps = {
 
 const PrevUsers: React.FC<PrevUsersProps> = ({
 	                                             logFromUser,
-	                                             getRegisteredUsers,
+	                                             registeredUsers,
 	                                             removeRegisteredUser,
 	                                             maxHeight = '400px',
 	                                             customWidth = {},
@@ -23,7 +23,7 @@ const PrevUsers: React.FC<PrevUsersProps> = ({
                                              }) => {
 	const [deletedUser, setDeletedUser] = React.useState<string>('')
 	
-	const users = getRegisteredUsers().map(login => <Paper
+	const users = registeredUsers.map(login => <Paper
 		key={ login }
 		sx={ { display: 'flex', justifyContent: 'space-between', padding: '0 10px' } }
 	>
