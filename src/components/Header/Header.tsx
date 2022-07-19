@@ -1,19 +1,18 @@
 import * as React from 'react'
-import { Container, Button, Grid, Box, Switch, FormControlLabel, Collapse } from '@mui/material'
-import { LightMode, DarkMode, Logout, GitHub } from '@mui/icons-material'
+import { Container, Button, Grid, Box, Collapse } from '@mui/material'
+import { Logout, Loop } from '@mui/icons-material'
 import { grey } from '@mui/material/colors'
 
+import ThemeSwitch from './ThemeSwitch'
+
 type HeaderProps = {
-	theme: Theme
-	setTheme: (theme: Theme) => void
+	isDarkTheme: boolean
+	switchTheme: () => void
 	logOut: () => void
 	loggedIn: boolean
 }
 
-const Header: React.FC<HeaderProps> = ({ setTheme, logOut, loggedIn, theme }) => {
-	const themeIcon: JSX.Element = theme === 'light' ? <LightMode fontSize={ 'small' } /> :
-		<DarkMode fontSize={ 'small' } />
-	
+const Header: React.FC<HeaderProps> = ({ isDarkTheme, switchTheme, logOut, loggedIn }) => {
 	return <Box sx={ { height: '8vh', borderBottom: '1px solid', borderColor: grey[400] } }>
 		<Container sx={ { height: '100%' } }>
 			<Grid
@@ -23,24 +22,26 @@ const Header: React.FC<HeaderProps> = ({ setTheme, logOut, loggedIn, theme }) =>
 				justifyContent={ 'space-between' }
 				alignItems={ 'center' }
 			>
-				<Box>
-					<GitHub color={ 'primary' } fontSize={ 'large' } />
-					<FormControlLabel control={ <Switch
-						onChange={ () => setTheme(theme === 'light' ? 'dark' : 'light') }
-						checked={ theme === 'dark' }
-					/> }
-					                  label={ themeIcon }
-					                  sx={ { marginLeft: '10px' } } />
-				</Box>
-				<Button
-					onClick={ logOut }
-					variant={ 'contained' }
-					disabled={ !loggedIn }
-					size={ 'small' }
-					startIcon={ <Logout /> }
-				>
-					log out
-				</Button>
+				<ThemeSwitch isDarkTheme={ isDarkTheme } switchTheme={ switchTheme } />
+				<Collapse in={ loggedIn }>
+					<Button /* Log out button */
+						sx={ { marginRight: '10px' } }
+						onClick={ logOut }
+						variant={ 'contained' }
+						size={ 'small' }
+						startIcon={ <Logout /> }
+					>
+						log out
+					</Button>
+					<Button /* Re-fetch user data button */
+						// onClick={  }
+						variant={ 'contained' }
+						size={ 'small' }
+						startIcon={ <Loop /> }
+					>
+						Refresh
+					</Button>
+				</Collapse>
 			</Grid>
 		</Container>
 	</Box>

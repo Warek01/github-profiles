@@ -1,6 +1,5 @@
 import React from 'react'
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom'
-import { useCookies } from 'react-cookie'
 import { ThemeProvider, CssBaseline } from '@mui/material'
 
 import Login from './pages/Login'
@@ -8,13 +7,15 @@ import Profile from './pages/Profile'
 import NotFound from './pages/NotFound'
 import Blank from './pages/Blank'
 import Header from './components/Header'
+import PrivateRoute from './components/PrivateRoute'
 
-import { UserProfile, GithubUserProfile } from './types'
-import GitHubRepo from './types/GitHubRepo'
+import { UserProfile, GithubUserProfile, GitHubRepo } from './types'
 
 import { darkTheme, lightTheme } from './Themes'
 
 import { useLocalStorage } from './hooks'
+
+import { fetchUserProfile } from './utils'
 
 const App: React.FC = () => {
 	const navigate = useNavigate()
@@ -22,19 +23,13 @@ const App: React.FC = () => {
 	
 	const path = location.pathname
 	
-	const [cookies, setCookie, removeCookie] = useCookies<'user' | 'is-auth' | 'theme', {
-		user?: string
-		'is-auth'?: string
-		theme?: Theme
-	}>(['user', 'is-auth', 'theme'])
-	const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null)
-	const [userRepos, setUserRepos] = React.useState<GitHubRepo[] | []>([])
-	const [loggedUserName, setLoggedUserName] = React.useState<string>(cookies['user']?.split(',')[0] || '')
-	const [oauthToken, setOauthToken] = React.useState<string>(cookies['user']?.split(',')[1] || '')
+	const [loginUserName, setLoginUserName] = React.useState<string>('')
+	const [oauthToken, setOauthToken] = React.useState<string>('')
 	const [loginErrMessage, setLoginErrMessage] = React.useState<string>('')
-	const [theme, setTheme] = React.useState<Theme>(cookies['theme'] || 'light')
 	
 	const [registeredUsers, setRegisteredUsers] = useLocalStorage<string[]>('registered-users', [])
+	const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>('user-profile', null)
+	const [isDarkTheme, switchTheme] = useLocalStorage<boolean>('dark-theme', false)
 	
 	const isFocused = React.useCallback((element: Element): boolean => document.activeElement! === element, [])
 	
@@ -53,113 +48,86 @@ const App: React.FC = () => {
 	
 	const setUserProfileCallback = React.useCallback((userName: string, token: string = ''): void => {
 		setOauthToken(token)
-		setLoggedUserName(userName)
-	}, [setLoggedUserName, setOauthToken])
+		setLoginUserName(userName)
+	}, [setLoginUserName, setOauthToken])
 	
 	const logOut = React.useCallback((): void => {
-		removeCookie('user')
-		setLoggedUserName('')
 		setUserProfile(null)
+		setLoginUserName('')
 		setOauthToken('')
 		navigate('/login')
-	}, [removeCookie, setLoggedUserName, setUserProfile, setOauthToken])
-	
-	const changeTheme = React.useCallback((newTheme: Theme) => {
-		setTheme(newTheme)
-		setCookie('theme', newTheme)
-	}, [setTheme, setCookie])
+	}, [setUserProfile])
 	
 	React.useEffect(() => {
-		if (!loggedUserName && path === '/')
+		if (!loginUserName && path === '/')
 			navigate('/login')
 	}, [location])
 	
 	React.useEffect(() => {
 		// Check if user is already logged in
-		if (userProfile || !loggedUserName) return;
+		if (userProfile || !loginUserName) return;
 		
 		(async () => {
-			const requestedTimestamp = Date.now()
+			console.log(`Fetching ${ loginUserName }`)
 			
-			// Fetch user data
-			const profileReq = await fetch(`https://api.github.com/users/${ loggedUserName }`, {
-				method: 'GET',
-				headers: {
-					'Authorization': oauthToken ? `token ${ oauthToken }` : '',
-					'Content-Type': 'application/json',
-					'Accept': 'application/json'
-				}
-			})
+			const userData = await fetchUserProfile(loginUserName, oauthToken)
 			
-			if (profileReq.ok) {
-				const profileRes = await profileReq.json() as GithubUserProfile
-				
-				setUserProfile({
-					requestedTimestamp,
-					authToken: oauthToken,
-					...profileRes
-				})
-				
-				// Fetch user repositories
-				const reposReq = await fetch(profileRes.repos_url, {
-					method: 'GET',
-					headers: {
-						'Authorization': oauthToken ? `token ${ oauthToken }` : '',
-						'Content-Type': 'application/json',
-						'Accept': 'application/json'
-					}
-				})
-				
-				if (reposReq.ok) {
-					const reposRes = await reposReq.json() as GitHubRepo[]
+			if (typeof userData === 'object')
+				setUserProfile(userData)
+			else switch (userData) {
+				case 401:
+					setLoginErrMessage('Wrong OAuth token.')
+					break
+				case 403:
+					setLoginErrMessage('403: Forbidden')
+					break
+				case 404:
+					setLoginErrMessage(`User ${ loginUserName } not found.`)
+					break
+				default:
+					console.warn('Unknown error:', userData)
 					
-					setUserRepos(reposRes)
-				}
-				
-			} else {
-				switch (profileReq.status) {
-					case 401:
-						setLoginErrMessage('Wrong OAuth token.')
-						break
-					case 404:
-						setLoginErrMessage(`User ${ loggedUserName } not found.`)
-						break
-					default:
-						console.warn('Unknown error:', profileReq)
-				}
-				
-				logOut()
+					setLoginUserName('')
+					setOauthToken('')
 			}
 		})()
-	}, [loggedUserName, userProfile])
+	}, [loginUserName, userProfile])
 	
 	React.useEffect(() => {
 		if (userProfile && (path === '/' || path === '/login')) {
-			setCookie('user', [userProfile.login, oauthToken].join(','))
 			addRegisteredUser(userProfile.login)
 			navigate('/profile')
 		}
-	}, [userProfile, oauthToken])
+	}, [userProfile])
 	
-	return <ThemeProvider theme={ theme === 'light' ? lightTheme : darkTheme }>
+	
+	return <ThemeProvider theme={ isDarkTheme ? darkTheme : lightTheme }>
 		<CssBaseline />
 		<div id={ 'app' }>
 			<Header
 				logOut={ logOut }
 				loggedIn={ !!userProfile }
-				setTheme={ changeTheme }
-				theme={ theme }
+				isDarkTheme={ isDarkTheme }
+				switchTheme={ () => switchTheme(prev => !prev) }
 			/>
 			<Routes>
 				<Route path={ '/' } element={ <Blank /> } />
-				<Route path={ 'login' } element={ <Login
-					errorMessage={ loginErrMessage }
-					isFocused={ isFocused }
-					setUserProfile={ setUserProfileCallback }
-					removeRegisteredUser={ removeRegisteredUser }
-					registeredUsers={ registeredUsers }
-				/> } />
-				<Route path={ 'profile' } element={ <Profile userProfile={ userProfile } userRepos={ userRepos } /> } />
+				<Route path={ 'login' } element={
+					<PrivateRoute condition={ !userProfile } redirect={ '/profile' }>
+						<Login
+							errorMessage={ loginErrMessage }
+							isFocused={ isFocused }
+							setUserProfile={ setUserProfileCallback }
+							removeRegisteredUser={ removeRegisteredUser }
+							registeredUsers={ registeredUsers }
+						/>
+					</PrivateRoute>
+				} />
+				<Route path={ 'profile' } element={
+					<PrivateRoute condition={ !!userProfile } redirect={ '/login' }>
+						<Profile userProfile={ userProfile! } />
+					</PrivateRoute>
+				} />
 				<Route path={ '*' } element={ <NotFound /> } />
 			</Routes>
 		</div>

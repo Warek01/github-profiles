@@ -3,12 +3,12 @@ import { Navigate } from 'react-router-dom'
 
 type PrivateRouteProps = {
 	condition: boolean,
-	navigateTo: string,
+	redirect: string,
 	children: JSX.Element
 };
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ condition, children, navigateTo = '/' }) => {
-	return condition ? children : <Navigate to={ navigateTo } />
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ condition, children, redirect = '/' }) => {
+	return condition ? children : <Navigate to={ redirect } />
 }
 
 export default PrivateRoute
