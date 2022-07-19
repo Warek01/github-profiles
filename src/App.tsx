@@ -21,9 +21,9 @@ const App: React.FC = () => {
 	const path = location.pathname
 	
 	const [cookies, setCookie, removeCookie] = useCookies<'user' | 'is-auth' | 'theme', {
-		user?: string;
-		'is-auth'?: string;
-		theme?: Theme;
+		user?: string
+		'is-auth'?: string
+		theme?: Theme
 	}>(['user', 'is-auth', 'theme'])
 	const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null)
 	const [userRepos, setUserRepos] = React.useState<GitHubRepo[] | []>([])
