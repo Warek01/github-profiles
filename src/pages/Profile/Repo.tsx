@@ -1,6 +1,5 @@
 import * as React from 'react'
-import { Paper, Link, Box, Button, IconButton, Typography, Tooltip, Zoom } from '@mui/material'
-import { teal } from '@mui/material/colors'
+import { Paper, Link, Box, Typography, Tooltip } from '@mui/material'
 import { RemoveRedEyeOutlined } from '@mui/icons-material'
 
 import GitHubRepo from '../../types/GitHubRepo'
@@ -11,7 +10,7 @@ type RepoProps = {
 };
 
 const Repo: React.FC<RepoProps> = ({ repo, setShowedRepo }) => {
-	// const description = repo.description ? (repo.description.length > 50 ? `${ repo.description.slice(0, 50) }...` : repo.description) : '';
+	const description = repo.description ? (repo.description.length > 30 ? `${ repo.description.slice(0, 30) }...` : repo.description) : ''
 	
 	return <Paper
 		sx={ {
@@ -35,25 +34,9 @@ const Repo: React.FC<RepoProps> = ({ repo, setShowedRepo }) => {
 					</Link>
 				</Typography>
 			</Tooltip>
-			<Tooltip title={ 'Language' }>
-				<Typography component={ 'span' } sx={ { color: teal[400] } }>
-					{ repo.language }
-				</Typography>
-			</Tooltip>
-			<Tooltip title={ 'Repo size' }>
-				<Typography component={ 'span' }>
-					({ repo.size } KB)
-				</Typography>
-			</Tooltip>
 			<Tooltip title={ 'Description' }>
 				<Typography component={ 'span' }>
-					{ repo.description }
-				</Typography>
-			</Tooltip>
-			<Tooltip title={ 'Watchers' }>
-				<Typography component={ 'span' } sx={ { display: 'inline-flex', alignItems: 'center' } }>
-					{ repo.watchers_count }
-					<RemoveRedEyeOutlined fontSize={ 'inherit' } />
+					{ description }
 				</Typography>
 			</Tooltip>
 		</Box>
@@ -61,4 +44,3 @@ const Repo: React.FC<RepoProps> = ({ repo, setShowedRepo }) => {
 }
 
 export default Repo
-

@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Container, Grid, Stack, Paper } from '@mui/material'
+import { Container, Grid } from '@mui/material'
 
-import RepoInfo from './RepoInfo'
+import RepoInfoSection from './RepoInfoSection'
 import InfoSection from './InfoSection'
 import RepoSection from './RepoSection'
 
@@ -12,6 +12,8 @@ type ProfileProps = {
 }
 
 const Profile: React.FC<ProfileProps> = ({ user }) => {
+	console.log(user)
+	
 	const isAuth = !!user.authToken
 	
 	const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | null>(null)
@@ -21,11 +23,11 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
 			<Grid item xs={ 3 }>
 				<InfoSection user={ user } isAuth={ isAuth } />
 			</Grid>
-			<Grid item xs={ 7 } display={ 'flex' } alignItems={ 'center' } justifyContent={ 'stretch' }>
+			<Grid item xs={ 6 } display={ 'flex' } alignItems={ 'center' } justifyContent={ 'stretch' }>
 				<RepoSection user={ user } isAuth={ isAuth } setShowedRepo={ setShowedRepo } />
 			</Grid>
-			<Grid item xs={ 2 }>
-				<RepoInfo repo={ showedRepo } />
+			<Grid item xs={ 3 }>
+				<RepoInfoSection repo={ showedRepo } />
 			</Grid>
 		</Grid>
 	</Container>

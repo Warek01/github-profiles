@@ -1,24 +1,17 @@
-import { createTheme, Zoom, Components } from '@mui/material'
+import { createTheme, Grow, Components } from '@mui/material'
 import { blue } from '@mui/material/colors'
 
 const componentsOverride: Components = {
 	MuiTooltip: {
 		defaultProps: {
-			enterDelay: 1500,
-			enterNextDelay: 1500,
+			enterDelay: 1000,
+			enterNextDelay: 1000,
 			placement: 'top',
-			TransitionComponent: Zoom
+			arrow: true,
+			title: 'undefined',
+			TransitionComponent: Grow
 		}
 	}
-	// MuiTypography: {
-	// 	styleOverrides: {
-	// 		root: {
-	// 			display: 'inline-flex',
-	// 			alignItems: 'center',
-	// 			wordWrap: 'break-word'
-	// 		}
-	// 	}
-	// }
 }
 
 const customScrollbar = {

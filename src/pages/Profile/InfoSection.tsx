@@ -6,7 +6,9 @@ import {
 	PersonOutlined,
 	LocationOnOutlined,
 	PaidOutlined,
-	Twitter
+	Twitter,
+	GitHub,
+	PlaylistAdd
 } from '@mui/icons-material'
 
 import { UserProfile } from '../../types'
@@ -80,6 +82,14 @@ const InfoSection: React.FC<InfoSectionProps> = ({ user, isAuth }) => {
 				<Twitter sx={ { fontSize: '1em', marginRight: '5px' } } />
 				{ user.twitter_username }
 			</Collapse>
+		</Grid>
+		<Grid item>
+			<GitHub sx={ { fontSize: '1em', marginRight: '5px' } } />
+			{ user.public_repos || 0 } public repos
+		</Grid>
+		<Grid item>
+			<PlaylistAdd sx={ { fontSize: '1em', marginRight: '5px' } } />
+			{ user.public_gists || 0 } public gists
 		</Grid>
 	</Grid>
 }
