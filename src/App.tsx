@@ -135,7 +135,7 @@ const App: React.FC = () => {
 				} />
 				<Route path={ 'profile' } element={
 					<PrivateRoute condition={ !!userProfile } redirect={ '/login' }>
-						<Profile userProfile={ userProfile! } />
+						<Profile user={ userProfile! } />
 					</PrivateRoute>
 				} />
 				<Route path={ '*' } element={ <NotFound /> } />
