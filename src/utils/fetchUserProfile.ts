@@ -1,41 +1,29 @@
 import { UserProfile, GithubUserProfile, GitHubRepo } from '../types'
 
+import GitHubRequest from './GitHubRequest'
+
 const fetchUserProfile = async (login: string, token: string = ''): Promise<UserProfile | number> => {
 	const requestedTimestamp = Date.now()
 	
-	const profileReq = await fetch(`https://api.github.com/users/${ login }`, {
-		method: 'GET',
-		headers: {
-			'Authorization': token ? `token ${ token }` : '',
-			'Content-Type': 'application/json',
-			'Accept': 'application/json'
-		}
-	})
+	const profileReq = new GitHubRequest<GithubUserProfile>(`https://api.github.com/users/${ login }`, token)
+	await profileReq.request()
 	
-	if (profileReq.ok) {
-		const profileRes = await profileReq.json() as GithubUserProfile
-		
-		// Fetch user repositories
-		const reposReq = await fetch(profileRes.repos_url, {
-			method: 'GET',
-			headers: {
-				'Authorization': token ? `token ${ token }` : '',
-				'Content-Type': 'application/json',
-				'Accept': 'application/json'
-			}
-		})
-		
-		if (reposReq.ok) {
-			const reposRes = await reposReq.json() as GitHubRepo[]
-			
-			return {
-				repos: reposRes,
-				requestedTimestamp,
-				authToken: token,
-				...profileRes
-			}
-		} else return reposReq.status
-	} else return profileReq.status
+	if (!profileReq.ok) return profileReq.status
+	
+	const profileRes = await profileReq.parse()
+	const reposReq = new GitHubRequest<GitHubRepo[]>(profileRes.repos_url, token)
+	await reposReq.request()
+	
+	if (!reposReq.ok) return reposReq.status
+	
+	const reposRes = await reposReq.parse()
+	
+	return {
+		repos: reposRes,
+		requestedTimestamp,
+		authToken: token,
+		...profileRes
+	}
 }
 
 export default fetchUserProfile
