@@ -17,6 +17,14 @@ import { useLocalStorage } from './hooks'
 
 import { fetchUserProfile } from './utils'
 
+export interface SnackbarContextProps {
+	show: (message: string) => void
+	showThenHide: (message: string, delay: number) => void
+	hide: () => void
+}
+
+export const snackbarContext = React.createContext<SnackbarContextProps>({} as SnackbarContextProps)
+
 const App: React.FC = () => {
 	const navigate = useNavigate()
 	const location = useLocation()
@@ -37,6 +45,19 @@ const App: React.FC = () => {
 	const saveRegisteredUsers = React.useCallback((logins: string[]) => setRegisteredUsers(logins),
 		[setRegisteredUsers])
 	
+	const showSnackbar = React.useCallback((message: string): void => {
+		setSnackbarMessage(message)
+	}, [setSnackbarMessage])
+	
+	const hideSnackbar = React.useCallback((): void => {
+		setSnackbarMessage('')
+	}, [setSnackbarMessage])
+	
+	const showSnackbarThenHide = React.useCallback((message: string, delay: number): void => {
+		showSnackbar(message)
+		setTimeout(hideSnackbar, delay)
+	}, [showSnackbar, hideSnackbar])
+	
 	const addRegisteredUser = React.useCallback((login: string): void => {
 		if (!login) return
 		const users = registeredUsers
@@ -56,6 +77,7 @@ const App: React.FC = () => {
 		setUserProfile(null)
 		setLoginUserName('')
 		setOauthToken('')
+		hideSnackbar()
 		navigate('/login')
 	}, [setUserProfile])
 	
@@ -77,19 +99,15 @@ const App: React.FC = () => {
 	React.useEffect(() => {
 			if (userProfile || !loginUserName) return;
 			
-			
 			(async () => {
 				console.log(`Fetching ${ loginUserName }`)
-				setSnackbarMessage('Loading profile')
 				const userData = await fetchUserProfile(loginUserName, oauthToken)
-				setSnackbarMessage('')
+				hideSnackbar()
 				
-				if (typeof userData === 'object')
-				{
+				if (typeof userData === 'object') {
 					setUserProfile(userData)
 					setLoginErrMessage('')
-				}
-				else switch (userData) {
+				} else switch (userData) {
 					case 401:
 						setLoginErrMessage('Wrong OAuth token.')
 						break
@@ -119,34 +137,37 @@ const App: React.FC = () => {
 	return <ThemeProvider theme={ isDarkTheme ? darkTheme : lightTheme }>
 		<CssBaseline />
 		<div id={ 'app' }>
-			<Header
-				logOut={ logOut }
-				loggedIn={ !!userProfile }
-				isDarkTheme={ isDarkTheme }
-				switchTheme={ () => switchTheme(prev => !prev) }
-				updateUserProfile={ updateUserProfile }
-			/>
-			<Routes>
-				<Route path={ '/' } element={ <Blank /> } />
-				<Route path={ 'login' } element={
-					<PrivateRoute condition={ !userProfile } redirect={ '/profile' }>
-						<Login
-							errorMessage={ loginErrMessage }
-							isFocused={ isFocused }
-							setUserProfile={ setUserProfileCallback }
-							removeRegisteredUser={ removeRegisteredUser }
-							registeredUsers={ registeredUsers }
-						/>
-					</PrivateRoute>
-				} />
-				<Route path={ 'profile' } element={
-					<PrivateRoute condition={ !!userProfile } redirect={ '/login' }>
-						<Profile user={ userProfile! } />
-					</PrivateRoute>
-				} />
-				<Route path={ '*' } element={ <NotFound /> } />
-			</Routes>
-			<Snackbar message={ snackbarMessage } open={ !!snackbarMessage } />
+			<snackbarContext.Provider
+				value={ { show: showSnackbar, hide: hideSnackbar, showThenHide: showSnackbarThenHide } }>
+				<Header
+					logOut={ logOut }
+					loggedIn={ !!userProfile }
+					isDarkTheme={ isDarkTheme }
+					switchTheme={ () => switchTheme(prev => !prev) }
+					updateUserProfile={ updateUserProfile }
+				/>
+				<Routes>
+					<Route path={ '/' } element={ <Blank /> } />
+					<Route path={ 'login' } element={
+						<PrivateRoute condition={ !userProfile } redirect={ '/profile' }>
+							<Login
+								errorMessage={ loginErrMessage }
+								isFocused={ isFocused }
+								setUserProfile={ setUserProfileCallback }
+								removeRegisteredUser={ removeRegisteredUser }
+								registeredUsers={ registeredUsers }
+							/>
+						</PrivateRoute>
+					} />
+					<Route path={ 'profile' } element={
+						<PrivateRoute condition={ !!userProfile } redirect={ '/login' }>
+							<Profile user={ userProfile! } />
+						</PrivateRoute>
+					} />
+					<Route path={ '*' } element={ <NotFound /> } />
+				</Routes>
+				<Snackbar message={ snackbarMessage } open={ !!snackbarMessage } />
+			</snackbarContext.Provider>
 		</div>
 	</ThemeProvider>
 }

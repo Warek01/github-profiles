@@ -4,6 +4,8 @@ import { Close } from '@mui/icons-material'
 
 import PrevUsers from '../../components/PrevUsers'
 
+import { snackbarContext } from '../../App'
+
 type LoginProps = {
 	errorMessage: string
 	isFocused: (element: Element) => boolean
@@ -19,6 +21,8 @@ const Login: React.FC<LoginProps> = ({
 	                                     registeredUsers,
 	                                     removeRegisteredUser
                                      }) => {
+	const snackbar = React.useContext(snackbarContext)
+	
 	const cardWidth = React.useMemo(() => {
 		return {
 			width: {
@@ -56,8 +60,9 @@ const Login: React.FC<LoginProps> = ({
 	}, [oauthInputRef, setOauthToken])
 	
 	const logFromUser = React.useCallback((userName: string, token: string = ''): void => {
+		snackbar.show(`Loading ${userName}`)
 		setUserProfile(userName, token) // Must implement auth
-	}, [setUserProfile])
+	}, [setUserProfile, snackbar])
 	
 	const reset = React.useCallback((): void => {
 		setOauthToken('')

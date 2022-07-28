@@ -7,6 +7,8 @@ import RepoSection from './RepoSection'
 
 import { UserProfile, GitHubRepo } from '../../types'
 
+import { snackbarContext } from '../../App'
+
 type ProfileProps = {
 	user: UserProfile
 }
@@ -14,9 +16,15 @@ type ProfileProps = {
 const Profile: React.FC<ProfileProps> = ({ user }) => {
 	console.log(user)
 	
+	const snackbar = React.useContext(snackbarContext)
+	
 	const isAuth = !!user.authToken
 	
 	const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | null>(null)
+	
+	React.useEffect(() => {
+		snackbar.showThenHide(`Loaded in ${ user.responseTimestamp - user.requestTimestamp } ms`, 1500)
+	}, [])
 	
 	return <Container>
 		<Grid container spacing={ 0 } sx={ { height: '92vh' } }>
