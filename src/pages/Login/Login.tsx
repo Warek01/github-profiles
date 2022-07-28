@@ -55,8 +55,8 @@ const Login: React.FC<LoginProps> = ({
 		setOauthToken(oauthInputRef.current!.value)
 	}, [oauthInputRef, setOauthToken])
 	
-	const logFromUser = React.useCallback((userName: string): void => {
-		setUserProfile(userName, '') // Must implement auth
+	const logFromUser = React.useCallback((userName: string, token: string = ''): void => {
+		setUserProfile(userName, token) // Must implement auth
 	}, [setUserProfile])
 	
 	const reset = React.useCallback((): void => {

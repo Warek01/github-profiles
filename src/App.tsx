@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom'
-import { ThemeProvider, CssBaseline } from '@mui/material'
+import { ThemeProvider, CssBaseline, Snackbar, CircularProgress } from '@mui/material'
 
 import Login from './pages/Login'
 import Profile from './pages/Profile'
@@ -9,7 +9,7 @@ import Blank from './pages/Blank'
 import Header from './components/Header'
 import PrivateRoute from './components/PrivateRoute'
 
-import { UserProfile, GithubUserProfile, GitHubRepo } from './types'
+import { UserProfile } from './types'
 
 import { darkTheme, lightTheme } from './Themes'
 
@@ -26,6 +26,7 @@ const App: React.FC = () => {
 	const [loginUserName, setLoginUserName] = React.useState<string>('')
 	const [oauthToken, setOauthToken] = React.useState<string>('')
 	const [loginErrMessage, setLoginErrMessage] = React.useState<string>('')
+	const [snackbarMessage, setSnackbarMessage] = React.useState<string>('')
 	
 	const [registeredUsers, setRegisteredUsers] = useLocalStorage<string[]>('registered-users', [])
 	const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>('user-profile', null)
@@ -74,34 +75,39 @@ const App: React.FC = () => {
 	}, [location])
 	
 	React.useEffect(() => {
-		// Check if user is already logged in
-		if (userProfile || !loginUserName) return;
-		
-		(async () => {
-			console.log(`Fetching ${ loginUserName }`)
+			if (userProfile || !loginUserName) return;
 			
-			const userData = await fetchUserProfile(loginUserName, oauthToken)
 			
-			if (typeof userData === 'object')
-				setUserProfile(userData)
-			else switch (userData) {
-				case 401:
-					setLoginErrMessage('Wrong OAuth token.')
-					break
-				case 403:
-					setLoginErrMessage('403: Forbidden')
-					break
-				case 404:
-					setLoginErrMessage(`User ${ loginUserName } not found.`)
-					break
-				default:
-					console.warn('Unknown error:', userData)
-					
-					setLoginUserName('')
-					setOauthToken('')
-			}
-		})()
-	}, [loginUserName])
+			(async () => {
+				console.log(`Fetching ${ loginUserName }`)
+				setSnackbarMessage('Loading profile')
+				const userData = await fetchUserProfile(loginUserName, oauthToken)
+				setSnackbarMessage('')
+				
+				if (typeof userData === 'object')
+				{
+					setUserProfile(userData)
+					setLoginErrMessage('')
+				}
+				else switch (userData) {
+					case 401:
+						setLoginErrMessage('Wrong OAuth token.')
+						break
+					case 403:
+						setLoginErrMessage('Forbidden: Too many requests')
+						break
+					case 404:
+						setLoginErrMessage(`User ${ loginUserName } not found.`)
+						break
+					default:
+						console.warn('Unknown error:', userData)
+						
+						setLoginUserName('')
+						setOauthToken('')
+				}
+			})()
+		}, [loginUserName]
+	)
 	
 	React.useEffect(() => {
 		if (userProfile && (path === '/' || path === '/login')) {
@@ -140,6 +146,7 @@ const App: React.FC = () => {
 				} />
 				<Route path={ '*' } element={ <NotFound /> } />
 			</Routes>
+			<Snackbar message={ snackbarMessage } open={ !!snackbarMessage } />
 		</div>
 	</ThemeProvider>
 }
