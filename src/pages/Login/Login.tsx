@@ -2,9 +2,9 @@ import * as React from 'react'
 import { Input, Button, Grid, Card, Alert, IconButton, Collapse } from '@mui/material'
 import { Close } from '@mui/icons-material'
 
-import PrevUsers from '../../components/PrevUsers'
-
 import { snackbarContext } from '../../App'
+
+import PrevUsers from './PrevUsers'
 
 type LoginProps = {
 	errorMessage: string
