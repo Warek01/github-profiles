@@ -1,11 +1,11 @@
-import { UserProfile, GithubUserProfile, GitHubRepo } from '../types'
+import { UserProfile, RawUserProfile, GitHubRepo } from '../types'
 
 import GitHubRequest from './GitHubRequest'
 
 const fetchUserProfile = async (login: string, token: string = ''): Promise<UserProfile | number> => {
 	const requestedTimestamp = Date.now()
 	
-	const profileReq = new GitHubRequest<GithubUserProfile>(`https://api.github.com/users/${ login }`, token)
+	const profileReq = new GitHubRequest<RawUserProfile>(`https://api.github.com/users/${ login }`, token)
 	await profileReq.request()
 	
 	if (!profileReq.ok) return profileReq.status
