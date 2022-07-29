@@ -1,5 +1,15 @@
 import * as React from 'react'
-import { Grid, Tooltip, Avatar, Typography, Link, Collapse } from '@mui/material'
+import {
+	Grid,
+	Tooltip,
+	Avatar,
+	Typography,
+	Link,
+	Collapse,
+	Accordion,
+	AccordionSummary,
+	AccordionDetails
+} from '@mui/material'
 import {
 	AccountBoxOutlined,
 	InfoOutlined,
@@ -8,10 +18,15 @@ import {
 	PaidOutlined,
 	Twitter,
 	GitHub,
-	PlaylistAdd
+	PlaylistAdd,
+	ExpandMore
 } from '@mui/icons-material'
 
 import { UserProfile } from '../../types'
+
+import analyzeReposLanguages from '../../utils/analyzeReposLanguages'
+
+import { snackbarContext } from '../../App'
 
 type InfoSectionProps = {
 	user: UserProfile
@@ -19,6 +34,8 @@ type InfoSectionProps = {
 }
 
 const InfoSection: React.FC<InfoSectionProps> = ({ user, isAuth }) => {
+	const snackbar = React.useContext(snackbarContext)
+	
 	const avatarSize = React.useMemo(() => {
 		return {
 			width: {
@@ -34,6 +51,39 @@ const InfoSection: React.FC<InfoSectionProps> = ({ user, isAuth }) => {
 			}
 		}
 	}, [])
+	
+	const [langListExpanded, setLangListExpanded] = React.useState<boolean>(false)
+	const [langList, setLangList] = React.useState<[[string, number]] | []>([])
+	
+	const getLangInfo = React.useCallback(async (): Promise<void> => {
+		const arr: [[string, number]] | [] = []
+		const langMap = await analyzeReposLanguages(user.repos)
+		snackbar.showThenHide(`Loaded in ${langMap.elapsedMs} ms`, 1000)
+		
+		langMap.parsed.forEach((value, key) => arr.push([key, value] as never))
+		
+		for (let i = 0; i < arr.length - 1; i++)
+			for (let j = i + 1; j < arr.length; j++) {
+				if (arr[j][1] > arr[i][1]) {
+					const temp = arr[i]
+					arr[i] = arr[j]
+					arr[j] = temp
+				}
+			}
+		
+		setLangList(arr)
+	}, [setLangList, setLangListExpanded])
+	
+	const handleAccordionExpansion = React.useCallback(async (): Promise<void> => {
+		if (!langList.length)
+			await getLangInfo()
+		
+		setLangListExpanded(prev => !prev)
+	}, [getLangInfo, setLangListExpanded])
+	
+	const langElements = langList.map(arr => <AccordionDetails key={ arr[0] }>
+		{ arr[0] }: { arr[1] }%
+	</AccordionDetails>)
 	
 	return <Grid item container={ true } display={ 'flex' } flexDirection={ 'column' }>
 		<Grid item display={ 'flex' } justifyContent={ 'center' }>
@@ -90,6 +140,16 @@ const InfoSection: React.FC<InfoSectionProps> = ({ user, isAuth }) => {
 		<Grid item>
 			<PlaylistAdd sx={ { fontSize: '1em', marginRight: '5px' } } />
 			{ user.public_gists || 0 } public gists
+		</Grid>
+		<Grid item>
+			<Accordion expanded={ langListExpanded }>
+				<AccordionSummary expandIcon={ <ExpandMore /> } onClick={ handleAccordionExpansion }>
+					<Typography>
+						Languages
+					</Typography>
+				</AccordionSummary>
+				{ langElements }
+			</Accordion>
 		</Grid>
 	</Grid>
 }

@@ -8,16 +8,12 @@ import RepoSection from './RepoSection'
 import { UserProfile, GitHubRepo } from '../../types'
 
 import { snackbarContext } from '../../App'
-import analyzeReposLanguages from '../../utils/analyzeReposLanguages'
 
 type ProfileProps = {
 	user: UserProfile
 }
 
 const Profile: React.FC<ProfileProps> = ({ user }) => {
-	console.log(user)
-	
-	
 	const snackbar = React.useContext(snackbarContext)
 	
 	const isAuth = !!user.authToken
@@ -26,11 +22,6 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
 	
 	React.useEffect(() => {
 		snackbar.showThenHide(`Loaded in ${ user.responseTimestamp - user.requestTimestamp } ms`, 1500);
-		
-		(async () => {
-			const map = await analyzeReposLanguages(user.repos)
-			console.log(map)
-		})()
 	}, [])
 	
 	return <Container>
