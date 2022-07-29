@@ -2,7 +2,7 @@ import * as React from 'react'
 import { IconButton, Button, Grid, Paper, Box, Stack } from '@mui/material'
 import { Delete, DoDisturbOutlined } from '@mui/icons-material'
 
-import { customScrollbar } from '../../Themes'
+import { customScrollbar } from '../../themes'
 
 type PrevUsersProps = {
 	logFromUser: (userName: string) => void

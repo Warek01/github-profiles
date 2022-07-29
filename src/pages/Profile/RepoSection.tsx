@@ -3,7 +3,7 @@ import { Paper, Stack } from '@mui/material'
 
 import Repo from './Repo'
 
-import { customScrollbar } from '../../Themes'
+import { customScrollbar } from '../../themes'
 
 import { UserProfile, GitHubRepo } from '../../types'
 

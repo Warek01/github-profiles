@@ -11,7 +11,7 @@ import PrivateRoute from './components/PrivateRoute'
 
 import { UserProfile } from './types'
 
-import { darkTheme, lightTheme } from './Themes'
+import { darkTheme, lightTheme } from './themes'
 
 import { useLocalStorage } from './hooks'
 
