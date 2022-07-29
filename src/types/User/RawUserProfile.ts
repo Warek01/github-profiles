@@ -18,7 +18,7 @@ export default interface RawUserProfile {
 	id: number
 	location?: string
 	login: string
-	name: string
+	name?: string
 	node_id: string
 	organizations_url?: string
 	owned_private_repos?: number

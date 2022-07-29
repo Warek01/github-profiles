@@ -23,7 +23,8 @@
     "import/extensions": "off",
     "import/no-extraneous-dependencies": "off",
     "@typescript-eslint/dot-notation": "off",
-    "@typescript-eslint/lines-between-class-members": "off"
+    "@typescript-eslint/lines-between-class-members": "off",
+    "@typescript-eslint/no-loop-func": "off"
   },
   "overrides": [
     {

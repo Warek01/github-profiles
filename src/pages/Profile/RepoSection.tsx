@@ -28,7 +28,7 @@ const RepoSection: React.FC<RepoSectionProps> = ({ user, isAuth, setShowedRepo }
 		} }
 	>
 		<Paper sx={ { textAlign: 'center' } } elevation={ 2 }>
-			{ user.name.split(' ')[0] }'s repositories
+			{ user.name? user.name!.split(' ')[0] : user.login }'s repositories
 		</Paper>
 		{ repos }
 	</Stack>
