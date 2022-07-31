@@ -23,40 +23,46 @@ const PrevUsers: React.FC<PrevUsersProps> = ({
                                              }) => {
 	const [deletedUser, setDeletedUser] = React.useState<string>('')
 	
-	const users = registeredUsers.map(login => <Paper
-		key={ login }
-		sx={ { display: 'flex', justifyContent: 'space-between', padding: '0 10px' } }
-	>
-		<Button onClick={ () => logFromUser(login) }>
-			<span>
-				{ login }
-			</span>
-		</Button>
-		<IconButton color={ 'primary' } onClick={ () => {
-			setDeletedUser(login)
-			removeRegisteredUser(login)
-		} }>
-			<Delete />
-		</IconButton>
-	</Paper>)
+	const users: JSX.Element[] = registeredUsers.map(login => (
+			<Paper
+				key={ login }
+				sx={ { display: 'flex', justifyContent: 'space-between', padding: '0 10px' } }
+			>
+				<Button onClick={ () => logFromUser(login) }>
+					{ login }
+				</Button>
+				<IconButton
+					color='primary'
+					onClick={ () => {
+						setDeletedUser(login)
+						removeRegisteredUser(login)
+					} }
+				>
+					<Delete />
+				</IconButton>
+			</Paper>
+		)
+	)
 	
-	const noUsersElement: JSX.Element = <Box p={ 0 } m={ 0 }>
-		<Paper sx={ { width: '50%', margin: '16px auto 0 auto' } }>
-			<DoDisturbOutlined sx={ { fontSize: '1em', marginRight: '3px' } } />
-			None
-		</Paper>
-	</Box>
-	
-	return <Grid container justifyContent={ 'center' } sx={ { margin, maxHeight } }>
-		<Box p={ 1 } sx={ { overflow: 'auto', maxHeight, ...customWidth, ...customScrollbar } }>
-			<Stack spacing={ 2 } sx={ { textAlign: 'center' } }>
-				<Paper elevation={ 2 }>
-					Previous users
-				</Paper>
-				{ users.length ? users : noUsersElement }
-			</Stack>
+	const noUsersElement: JSX.Element = (
+		<Box p={ 0 } m={ 0 }>
+			<Paper sx={ { width: '50%', margin: '16px auto 0 auto' } }>
+				<DoDisturbOutlined sx={ { fontSize: '1em', marginRight: '3px' } } />
+				None
+			</Paper>
 		</Box>
-	</Grid>
+	)
+	
+	return (
+		<Grid container justifyContent='center' sx={ { margin, maxHeight } }>
+			<Box p={ 1 } sx={ { overflow: 'auto', maxHeight, ...customWidth, ...customScrollbar } }>
+				<Stack spacing={ 2 } sx={ { textAlign: 'center' } }>
+					<Paper elevation={ 2 }>Previous users</Paper>
+					{ !!users.length ? users : noUsersElement }
+				</Stack>
+			</Box>
+		</Grid>
+	)
 }
 
 export default PrevUsers

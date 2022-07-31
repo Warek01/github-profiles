@@ -14,24 +14,28 @@ type RepoSectionProps = {
 }
 
 const RepoSection: React.FC<RepoSectionProps> = ({ user, isAuth, setShowedRepo }) => {
-	const repos: JSX.Element[] = user.repos.map(r => <Repo key={ r.id } repo={ r }
-	                                                       setShowedRepo={ setShowedRepo } />)
+	const repos: JSX.Element[] = user.repos.map(r => (
+			<Repo key={ r.id } repo={ r } setShowedRepo={ setShowedRepo } />
+		)
+	)
 	
-	return <Stack
-		spacing={ 2 }
-		sx={ {
-			...customScrollbar,
-			width: '100%',
-			height: '86vh',
-			overflow: 'auto',
-			padding: '10px'
-		} }
-	>
-		<Paper sx={ { textAlign: 'center' } } elevation={ 2 }>
-			{ user.name? user.name!.split(' ')[0] : user.login }'s repositories
-		</Paper>
-		{ repos }
-	</Stack>
+	return (
+		<Stack
+			spacing={ 2 }
+			sx={ {
+				...customScrollbar,
+				width: '100%',
+				height: '86vh',
+				overflow: 'auto',
+				padding: '10px'
+			} }
+		>
+			<Paper sx={ { textAlign: 'center' } } elevation={ 2 }>
+				{ user.name ? user.name!.split(' ')[0] : user.login }'s repositories
+			</Paper>
+			{ repos }
+		</Stack>
+	)
 }
 
 export default RepoSection

@@ -14,38 +14,40 @@ type HeaderProps = {
 }
 
 const Header: React.FC<HeaderProps> = ({ isDarkTheme, switchTheme, logOut, loggedIn, updateUserProfile }) => {
-	return <Box sx={ { height: '8vh', borderBottom: '1px solid', borderColor: grey[400] } }>
-		<Container sx={ { height: '100%' } }>
-			<Grid
-				container
-				sx={ { height: '100%' } }
-				display={ 'flex' }
-				justifyContent={ 'space-between' }
-				alignItems={ 'center' }
-			>
-				<ThemeSwitch isDarkTheme={ isDarkTheme } switchTheme={ switchTheme } />
-				<Collapse in={ loggedIn }>
-					<Button /* Log out button */
-						sx={ { marginRight: '10px' } }
-						onClick={ logOut }
-						variant={ 'contained' }
-						size={ 'small' }
-						startIcon={ <Logout /> }
-					>
-						log out
-					</Button>
-					<Button /* Re-fetch user data button */
-						onClick={ updateUserProfile }
-						variant={ 'contained' }
-						size={ 'small' }
-						startIcon={ <Loop /> }
-					>
-						Refresh
-					</Button>
-				</Collapse>
-			</Grid>
-		</Container>
-	</Box>
+	return (
+		<Box sx={ { height: '8vh', borderBottom: '1px solid', borderColor: grey[400] } }>
+			<Container sx={ { height: '100%' } }>
+				<Grid
+					container
+					sx={ { height: '100%' } }
+					display='flex'
+					justifyContent='space-between'
+					alignItems='center'
+				>
+					<ThemeSwitch isDarkTheme={ isDarkTheme } switchTheme={ switchTheme } />
+					<Collapse in={ loggedIn }>
+						<Button
+							sx={ { marginRight: '10px' } }
+							onClick={ logOut }
+							variant='contained'
+							size='small'
+							startIcon={ <Logout /> }
+						>
+							log out
+						</Button>
+						<Button
+							onClick={ updateUserProfile }
+							variant='contained'
+							size='small'
+							startIcon={ <Loop /> }
+						>
+							Refresh
+						</Button>
+					</Collapse>
+				</Grid>
+			</Container>
+		</Box>
+	)
 }
 
 export default Header

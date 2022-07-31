@@ -8,7 +8,11 @@ type PrivateRouteProps = {
 };
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ condition, children, redirect = '/' }) => {
-	return condition ? children : <Navigate to={ redirect } />
+	return (
+		condition
+			? children
+			: <Navigate to={ redirect } />
+	)
 }
 
 export default PrivateRoute
