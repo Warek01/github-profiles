@@ -23,8 +23,8 @@ const Login: React.FC<LoginProps> = ({
                                      }) => {
 	const snackbar = React.useContext(snackbarContext)
 	
-	const cardWidth = React.useMemo(() => {
-		return {
+	const cardWidth = React.useMemo(() =>
+		({
 			width: {
 				xl: '25vw',
 				lg: '25vw',
@@ -33,8 +33,7 @@ const Login: React.FC<LoginProps> = ({
 				xs: '75vw',
 				xxs: '85vw'
 			}
-		}
-	}, [])
+		}), [])
 	
 	const [inputText, setInputText] = React.useState<string>('')
 	const [oauthToken, setOauthToken] = React.useState<string>('')
@@ -60,7 +59,7 @@ const Login: React.FC<LoginProps> = ({
 	}, [oauthInputRef, setOauthToken])
 	
 	const logFromUser = React.useCallback((userName: string, token: string = ''): void => {
-		snackbar.show(`Loading ${userName}`)
+		snackbar.show(`Loading ${ userName }`)
 		setUserProfile(userName, token) // Must implement auth
 	}, [setUserProfile, snackbar])
 	
@@ -86,18 +85,18 @@ const Login: React.FC<LoginProps> = ({
 		}
 	}, [oauthToken, submit, setOauthInputShown])
 	
-	const errorElement = <Collapse in={ errorShown } children={ <Alert severity={ 'error' } action={ <IconButton
-		size={ 'small' }
+	const errorElement = <Collapse in={ errorShown } children={ <Alert severity='error' action={ <IconButton
+		size='small'
 		onClick={ () => setErrorShown(false) }
-	><Close fontSize={ 'inherit' } /></IconButton> }>
+	><Close fontSize='inherit' /></IconButton> }>
 		{ errorMessage }
 	</Alert> } />
 	
 	const authSectionElement = oauthInputShown ? <Input
-			type={ 'password' }
-			autoComplete={ 'off' }
+			type='password'
+			autoComplete='off'
 			inputRef={ oauthInputRef }
-			placeholder={ 'KEY HERE' }
+			placeholder='KEY HERE'
 			value={ oauthToken }
 			onChange={ onOauthTokenChange }
 		/> :
@@ -106,67 +105,65 @@ const Login: React.FC<LoginProps> = ({
 		</Button>
 	
 	React.useEffect(() => {
-		if (oauthInputShown) {
+		if (oauthInputShown)
 			oauthInputRef.current!.focus()
-		} else {
+		else
 			setOauthToken('')
-		}
 	}, [oauthInputShown])
 	
-	React.useEffect(() => {
-		setErrorShown(!!errorMessage)
-	}, [errorMessage])
+	React.useEffect(() => setErrorShown(!!errorMessage), [errorMessage])
 	
-	return <>
-		<Grid container justifyContent={ 'center' } sx={ { height: '40vh', margin: '4vh 0' } }>
-			<Card sx={ { ...cardWidth, padding: '30px 0' } } onKeyDown={ handleInputFormKeydown }>
-				<Grid
-					container
-					spacing={ 1 }
-					justifyContent={ 'center' }
-					alignItems={ 'center' }
-					flexDirection={ 'column' }
-				>
-					<Grid item>
-						<Input
-							type={ 'text' }
-							autoComplete={ 'off' }
-							inputRef={ loginInputRef }
-							placeholder={ 'USERNAME' }
-							value={ inputText }
-							onChange={ onLoginInputChange }
-						/>
+	return (
+		<>
+			<Grid container justifyContent='center' sx={ { height: '40vh', margin: '4vh 0' } }>
+				<Card sx={ { ...cardWidth, padding: '30px 0' } } onKeyDown={ handleInputFormKeydown }>
+					<Grid
+						container
+						spacing={ 1 }
+						justifyContent='center'
+						alignItems='center'
+						flexDirection='column'
+					>
+						<Grid item>
+							<Input
+								type='text'
+								autoComplete='off'
+								placeholder='USERNAME'
+								inputRef={ loginInputRef }
+								value={ inputText }
+								onChange={ onLoginInputChange }
+							/>
+						</Grid>
+						<Grid item>
+							{ errorElement }
+						</Grid>
+						<Grid item>
+							{ authSectionElement }
+						</Grid>
+						<Grid item>
+							<Button onClick={ submit }>
+								submit
+							</Button>
+						</Grid>
+						<Grid item>
+							<Button onClick={ reset }>
+								reset
+							</Button>
+						</Grid>
 					</Grid>
-					<Grid item>
-						{ errorElement }
-					</Grid>
-					<Grid item>
-						{ authSectionElement }
-					</Grid>
-					<Grid item>
-						<Button onClick={ submit }>
-							submit
-						</Button>
-					</Grid>
-					<Grid item>
-						<Button onClick={ reset }>
-							reset
-						</Button>
-					</Grid>
-				</Grid>
-			</Card>
-		</Grid>
-		
-		<PrevUsers
-			logFromUser={ logFromUser }
-			removeRegisteredUser={ removeRegisteredUser }
-			registeredUsers={ registeredUsers }
-			customWidth={ cardWidth }
-			maxHeight={ '40vh' }
-			margin={ '4vh 0' }
-		/>
-	</>
+				</Card>
+			</Grid>
+			
+			<PrevUsers
+				logFromUser={ logFromUser }
+				removeRegisteredUser={ removeRegisteredUser }
+				registeredUsers={ registeredUsers }
+				customWidth={ cardWidth }
+				maxHeight='40vh'
+				margin='4vh 0'
+			/>
+		</>
+	)
 }
 
 export default Login
-
