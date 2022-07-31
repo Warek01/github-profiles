@@ -54,34 +54,26 @@ const InfoSection: React.FC<InfoSectionProps> = ({ user, isAuth }) => {
 	const [langList, setLangList] = React.useState<[string, number][]>([])
 	
 	const getLangInfo = React.useCallback(async (): Promise<void> => {
-		const arr: [string, number][] = []
 		const langMap = await analyzeReposLanguages(user.repos)
 		snackbar.showThenHide(`Loaded in ${ langMap.elapsedMs } ms`, 1000)
 		
-		langMap.parsed.forEach((value, key) => arr.push([key, value]))
+		const sortedArr: [string, number][] = []
+		langMap.parsed.forEach((value, key) => sortedArr.push([key, value]))
+		sortedArr.sort((a, b) => b[1] - a[1])
 		
-		for (let i = 0; i < arr.length - 1; i++)
-			for (let j = i + 1; j < arr.length; j++) {
-				if (arr[j][1] > arr[i][1]) {
-					const temp = arr[i]
-					arr[i] = arr[j]
-					arr[j] = temp
-				}
-			}
-		
-		setLangList(arr)
-	}, [setLangList, setLangListExpanded])
+		setLangList(sortedArr)
+	}, [])
 	
 	const handleAccordionExpansion = React.useCallback(async (): Promise<void> => {
 		if (!langList.length)
 			await getLangInfo()
 		
 		setLangListExpanded(prev => !prev)
-	}, [getLangInfo, setLangListExpanded])
+	}, [])
 	
-	const langElements = langList.map(arr => (
-			<AccordionDetails key={ arr[0] }>
-				{ arr[0] }: { arr[1] }%
+	const langElements: JSX.Element[] = langList.map(([language, value]) => (
+			<AccordionDetails key={ language }>
+				{ language }: { value }%
 			</AccordionDetails>
 		)
 	)

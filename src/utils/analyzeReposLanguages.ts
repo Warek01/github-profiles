@@ -1,7 +1,5 @@
 import { GitHubRepo } from '../types'
 
-import GitHubRequest from './GitHubRequest'
-
 interface AnalyzedRepoLanguages {
 	raw: Map<string, number>
 	parsed: Map<string, number>
@@ -10,34 +8,44 @@ interface AnalyzedRepoLanguages {
 }
 
 const analyzeReposLanguages = async (repos: GitHubRepo[], authToken: string = ''): Promise<AnalyzedRepoLanguages> => {
+	const headers = {
+		'Content-Type': 'application/json',
+		'Content-Language': 'en-US, en-GB',
+		'Accept': 'application/json',
+		'Authorization': !!authToken ? `token ${ authToken }` : ''
+	}
 	const begin = Date.now()
 	const raw = new Map<string, number>()
 	const parsed = new Map<string, number>()
 	let total = 0
 	
-	for (const repo of repos) {
-		const req = new GitHubRequest<{ [name: string]: number }>(repo.languages_url, authToken)
-		await req.request()
-		if (!req.ok)
-			console.log('Error fetching repo languages', req.status, repo)
-		const res = await req.parse()
+	try {
+		const promises: Promise<Response>[] = []
+		repos.forEach(repo => promises.push(fetch(repo.languages_url, { headers })))
 		
-		for (const [lang, value] of Object.entries(res)) {
-			total += value
-			if (raw.has(lang))
-				raw.set(lang, raw.get(lang)! + value)
-			else
-				raw.set(lang, value)
-		}
+		const responses = await Promise.all(promises)
+		const values: { [name: string]: number }[] = await Promise.all(responses.map(res => res.json()))
+		
+		values.forEach(obj => {
+			Object.entries(obj).forEach(([key, value]) => {
+				total += value
+				if (raw.has(key)) raw.set(key, raw.get(key)! + value)
+				else raw.set(key, value)
+			})
+		})
 		
 		raw.forEach((value, key) => {
-			parsed.set(key, Number((value / total * 100).toFixed(2)))
+			const v = Number((value / total * 100).toFixed(2))
+			parsed.set(key, v)
 		})
+		
+	} catch (err) {
+	
 	}
 	
-	const end = Date.now()
+	const elapsedMs = Date.now() - begin
 	
-	return { raw, parsed, total, elapsedMs: end - begin }
+	return { raw, parsed, total, elapsedMs }
 }
 
 export default analyzeReposLanguages
