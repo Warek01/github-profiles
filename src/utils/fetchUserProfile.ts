@@ -1,6 +1,4 @@
-import { UserProfile, RawUserProfile, GitHubRepo } from '../types'
-
-import GitHubRequest from './GitHubRequest'
+import { UserProfile, GitHubRepo, RawUserProfile } from '../types'
 
 /**
  * Loads user profile and its repositories
@@ -9,29 +7,35 @@ import GitHubRequest from './GitHubRequest'
  * @returns {@link UserProfile} or status code if failed
  * */
 const fetchUserProfile = async (login: string, authToken: string = ''): Promise<UserProfile | number> => {
-	const requestTimestamp = Date.now()
-	
-	const profileReq = new GitHubRequest<RawUserProfile>(`https://api.github.com/users/${ login }`, authToken)
-	await profileReq.request()
-	
-	if (!profileReq.ok) return profileReq.status
-	
-	const profileRes = await profileReq.parse()
-	const reposReq = new GitHubRequest<GitHubRepo[]>(profileRes.repos_url, authToken)
-	await reposReq.request()
-	
-	if (!reposReq.ok) return reposReq.status
-	
-	const repos = await reposReq.parse()
-	const responseTimestamp = Date.now()
-	
-	return {
-		authToken,
-		repos,
-		requestTimestamp,
-		responseTimestamp,
-		...profileRes
+	const headers = {
+		'Content-Type': 'application/json',
+		'Content-Language': 'en-US, en-GB',
+		'Accept': 'application/json',
+		'Authorization': !!authToken ? `token ${ authToken }` : ''
 	}
+	
+	const begin = Date.now()
+	
+	const result = await Promise.all([
+		fetch(`https://api.github.com/users/${ login }`, { headers }),
+		fetch(`https://api.github.com/users/${ login }/repos`, { headers })
+	])
+	
+	let profile: RawUserProfile = {} as RawUserProfile
+	let repos: GitHubRepo[] = []
+	
+	for (const value of result) {
+		if (!value.ok)
+			return value.status
+		const res = await value.json()
+		
+		if (Array.isArray(res)) repos = res
+		else profile = res
+	}
+	
+	const elapsedMs = Date.now() - begin
+	
+	return { authToken, repos, elapsedMs, ...profile }
 }
 
 export default fetchUserProfile

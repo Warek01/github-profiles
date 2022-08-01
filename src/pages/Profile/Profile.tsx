@@ -21,7 +21,12 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
 	const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | null>(null)
 	
 	React.useEffect(() => {
-		snackbar.showThenHide(`Loaded in ${ user.responseTimestamp - user.requestTimestamp } ms`, 1500)
+		snackbar.showThenHide(`Loaded in ${ user.elapsedMs } ms`, 1500)
+		
+		return () => {
+			// Hide snackbar before unmounting
+			snackbar.hide()
+		}
 	}, [])
 	
 	return (
