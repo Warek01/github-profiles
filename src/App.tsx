@@ -140,6 +140,7 @@ const App: React.FC = () => {
 		if (userProfile && (path === '/' || path === '/login')) {
 			addRegisteredUser(userProfile.login)
 			navigate('/profile')
+			showSnackbarThenHide(`Profile fetched in ${ userProfile.elapsedMs } ms`, 1500)
 		}
 	}, [userProfile])
 	

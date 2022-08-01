@@ -5,16 +5,20 @@ import Repo from './Repo'
 
 import { customScrollbar } from '../../../themes'
 
-import { UserProfile, GitHubRepo } from '../../../types'
+import { GitHubRepo } from '../../../types'
+
+import { userContext } from '../../../App'
 
 type RepoSectionProps = {
-	user: UserProfile
-	isAuth: boolean
 	setShowedRepo: (repo: GitHubRepo | null) => void
 }
 
-const ReposSection: React.FC<RepoSectionProps> = ({ user, isAuth, setShowedRepo }) => {
-	const repos: JSX.Element[] = user.repos.map(r => (
+const ReposSection: React.FC<RepoSectionProps> = ({ setShowedRepo }) => {
+	const user = React.useContext(userContext)
+	
+	const profile = user.profile!
+	
+	const repos: JSX.Element[] = profile.repos.map(r => (
 			<Repo key={ r.id } repo={ r } setShowedRepo={ setShowedRepo } />
 		)
 	)
@@ -31,7 +35,7 @@ const ReposSection: React.FC<RepoSectionProps> = ({ user, isAuth, setShowedRepo 
 			} }
 		>
 			<Paper sx={ { textAlign: 'center' } } elevation={ 2 }>
-				{ user.name ? user.name!.split(' ')[0] : user.login }'s repositories
+				{ profile.name ? profile.name!.split(' ')[0] : profile.login }'s repositories
 			</Paper>
 			{ repos }
 		</Stack>

@@ -20,14 +20,11 @@ import {
 
 import LangInfo from './LangInfo'
 
-import { UserProfile } from '../../../types'
+import { userContext } from '../../../App'
 
-type InfoSectionProps = {
-	user: UserProfile
-	isAuth: boolean
-}
-
-const InfoSection: React.FC<InfoSectionProps> = ({ user, isAuth }) => {
+const InfoSection: React.FC = () => {
+	const user = React.useContext(userContext)
+	
 	const avatarSize = React.useMemo(() => ({
 		width: {
 			lg: '128px',
@@ -42,62 +39,65 @@ const InfoSection: React.FC<InfoSectionProps> = ({ user, isAuth }) => {
 		}
 	}), [])
 	
+	const profile = user.profile!
+	const isAuth = !!profile.authToken
+	
 	return (
 		<Grid item container={ true } display='flex' flexDirection='column'>
 			<Grid item display='flex' justifyContent='center'>
-				<Tooltip title={ user.login }>
+				<Tooltip title={ profile.login }>
 					<Avatar
-						src={ user.avatar_url ?? '' }
-						alt={ user.login }
+						src={ profile.avatar_url ?? '' }
+						alt={ profile.login }
 						sx={ { ...avatarSize, margin: '3vh 0' } }
 					>
-						{ user.login[0] }
+						{ profile.login[0] }
 					</Avatar>
 				</Tooltip>
 			</Grid>
 			<Grid item>
 				<Typography component='span'>
 					<AccountBoxOutlined sx={ { fontSize: '1em', marginRight: '5px' } } />
-					{ user.name ?? '' } <Link href={ `https://github.com/${ user.login }` }>@{ user.login }</Link>
+					{ profile.name ?? '' } <Link href={ `https://github.com/${ profile.login }` }>@{ profile.login }</Link>
 				</Typography>
 			</Grid>
 			<Grid item>
-				<Collapse in={ !!user.bio }>
+				<Collapse in={ !!profile.bio }>
 					<Typography>
 						<InfoOutlined sx={ { fontSize: '1em', marginRight: '5px' } } />
-						{ user.bio ?? '' }
+						{ profile.bio ?? '' }
 					</Typography>
 				</Collapse>
 			</Grid>
 			<Grid item>
 				<PersonOutlined sx={ { fontSize: '1em', marginRight: '5px' } } />
-				{ user.followers } followers, { user.following } following
+				{ profile.followers } followers, { profile.following } following
 			</Grid>
 			<Grid item>
-				<Collapse in={ !!user.location }>
+				<Collapse in={ !!profile.location }>
 					<LocationOnOutlined sx={ { fontSize: '1em', marginRight: '5px' } } />
-					{ user.location }
+					{ profile.location }
 				</Collapse>
 			</Grid>
 			<Grid item>
 				<Collapse in={ isAuth }>
 					<PaidOutlined sx={ { fontSize: '1em', marginRight: '5px' } } />
-					Plan: { user.plan?.name }
+					Plan: { profile.plan?.name }
 				</Collapse>
 			</Grid>
 			<Grid item>
-				<Collapse in={ isAuth && !!user.twitter_username }>
+				<Collapse in={ isAuth && !!profile.twitter_username }>
 					<Twitter sx={ { fontSize: '1em', marginRight: '5px' } } />
-					{ user.twitter_username }
+					{ profile.twitter_username }
 				</Collapse>
 			</Grid>
 			<Grid item>
 				<GitHub sx={ { fontSize: '1em', marginRight: '5px' } } />
-				{ user.public_repos ?? 0 } public repos
+				{ profile.public_repos ?? 0 } public repos
 			</Grid>
 			<Grid item>
 				<PlaylistAdd sx={ { fontSize: '1em', marginRight: '5px' } } />
-				{ user.public_gists ?? 0 } public gists
+				{ profile.public_gists ?? 0 } public gists
 			</Grid>
 			<Grid item>
 				<LangInfo />
