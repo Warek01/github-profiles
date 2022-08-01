@@ -25,6 +25,13 @@ export interface SnackbarContextProps {
 
 export const snackbarContext = React.createContext<SnackbarContextProps>({} as SnackbarContextProps)
 
+export interface UserContextProps {
+	profile: UserProfile | null
+	setProfile: (value: (((val: (UserProfile | null)) => (UserProfile | null)) | UserProfile | null)) => void
+}
+
+export const userContext = React.createContext<UserContextProps>({} as UserContextProps)
+
 const App: React.FC = () => {
 	const navigate = useNavigate()
 	const location = useLocation()
@@ -146,34 +153,36 @@ const App: React.FC = () => {
 			<div id='app'>
 				<snackbarContext.Provider
 					value={ { show: showSnackbar, hide: hideSnackbar, showThenHide: showSnackbarThenHide } }>
-					<Header
-						logOut={ logOut }
-						loggedIn={ !!userProfile }
-						isDarkTheme={ isDarkTheme }
-						switchTheme={ () => switchTheme(prev => !prev) }
-						updateUserProfile={ updateUserProfile }
-					/>
-					<Routes>
-						<Route path='/' element={ <Blank /> } />
-						<Route path='login' element={
-							<PrivateRoute condition={ !userProfile } redirect='/profile'>
-								<Login
-									errorMessage={ loginErrMessage }
-									isFocused={ isFocused }
-									setUserProfile={ setUserProfileCallback }
-									removeRegisteredUser={ removeRegisteredUser }
-									registeredUsers={ registeredUsers }
-								/>
-							</PrivateRoute>
-						} />
-						<Route path='profile' element={
-							<PrivateRoute condition={ !!userProfile } redirect='/login'>
-								<Profile user={ userProfile! } />
-							</PrivateRoute>
-						} />
-						<Route path='*' element={ <NotFound /> } />
-					</Routes>
-					<Snackbar message={ snackbarMessage } open={ !!snackbarMessage } />
+					<userContext.Provider value={ { profile: userProfile, setProfile: setUserProfile } }>
+						<Header
+							logOut={ logOut }
+							loggedIn={ !!userProfile }
+							isDarkTheme={ isDarkTheme }
+							switchTheme={ () => switchTheme(prev => !prev) }
+							updateUserProfile={ updateUserProfile }
+						/>
+						<Routes>
+							<Route path='/' element={ <Blank /> } />
+							<Route path='login' element={
+								<PrivateRoute condition={ !userProfile } redirect='/profile'>
+									<Login
+										errorMessage={ loginErrMessage }
+										isFocused={ isFocused }
+										setUserProfile={ setUserProfileCallback }
+										removeRegisteredUser={ removeRegisteredUser }
+										registeredUsers={ registeredUsers }
+									/>
+								</PrivateRoute>
+							} />
+							<Route path='profile' element={
+								<PrivateRoute condition={ !!userProfile } redirect='/login'>
+									<Profile user={ userProfile! } />
+								</PrivateRoute>
+							} />
+							<Route path='*' element={ <NotFound /> } />
+						</Routes>
+						<Snackbar message={ snackbarMessage } open={ !!snackbarMessage } />
+					</userContext.Provider>
 				</snackbarContext.Provider>
 			</div>
 		</ThemeProvider>

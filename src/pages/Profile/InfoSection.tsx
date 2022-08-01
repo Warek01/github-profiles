@@ -5,10 +5,7 @@ import {
 	Avatar,
 	Typography,
 	Link,
-	Collapse,
-	Accordion,
-	AccordionSummary,
-	AccordionDetails
+	Collapse
 } from '@mui/material'
 import {
 	AccountBoxOutlined,
@@ -18,9 +15,10 @@ import {
 	PaidOutlined,
 	Twitter,
 	GitHub,
-	PlaylistAdd,
-	ExpandMore
+	PlaylistAdd
 } from '@mui/icons-material'
+
+import LangInfo from './LangInfo'
 
 import { UserProfile } from '../../types'
 
@@ -49,34 +47,6 @@ const InfoSection: React.FC<InfoSectionProps> = ({ user, isAuth }) => {
 			xs: '64px'
 		}
 	}), [])
-	
-	const [langListExpanded, setLangListExpanded] = React.useState<boolean>(false)
-	const [langList, setLangList] = React.useState<[string, number][]>([])
-	
-	const getLangInfo = React.useCallback(async (): Promise<void> => {
-		const langMap = await analyzeReposLanguages(user.repos)
-		snackbar.showThenHide(`Loaded in ${ langMap.elapsedMs } ms`, 1000)
-		
-		const sortedArr: [string, number][] = []
-		langMap.parsed.forEach((value, key) => sortedArr.push([key, value]))
-		sortedArr.sort((a, b) => b[1] - a[1])
-		
-		setLangList(sortedArr)
-	}, [])
-	
-	const handleAccordionExpansion = React.useCallback(async (): Promise<void> => {
-		if (!langList.length)
-			await getLangInfo()
-		
-		setLangListExpanded(prev => !prev)
-	}, [])
-	
-	const langElements: JSX.Element[] = langList.map(([language, value]) => (
-			<AccordionDetails key={ language }>
-				{ language }: { value }%
-			</AccordionDetails>
-		)
-	)
 	
 	return (
 		<Grid item container={ true } display='flex' flexDirection='column'>
@@ -136,14 +106,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({ user, isAuth }) => {
 				{ user.public_gists ?? 0 } public gists
 			</Grid>
 			<Grid item>
-				<Accordion expanded={ langListExpanded }>
-					<AccordionSummary expandIcon={ <ExpandMore /> } onClick={ handleAccordionExpansion }>
-						<Typography>
-							Languages
-						</Typography>
-					</AccordionSummary>
-					{ langElements }
-				</Accordion>
+				<LangInfo />
 			</Grid>
 		</Grid>
 	)
