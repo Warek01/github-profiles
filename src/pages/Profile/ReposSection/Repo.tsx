@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Paper, Link, Box, Typography, Tooltip } from '@mui/material'
 
-import GitHubRepo from '../../types/GitHubRepo'
+import GitHubRepo from '../../../types/GitHubRepo'
 
 type RepoProps = {
 	repo: GitHubRepo

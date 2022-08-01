@@ -3,25 +3,23 @@ import { Container, Grid } from '@mui/material'
 
 import RepoInfoSection from './RepoInfoSection'
 import InfoSection from './InfoSection'
-import RepoSection from './RepoSection'
+import ReposSection from './ReposSection'
 
-import { UserProfile, GitHubRepo } from '../../types'
+import { GitHubRepo } from '../../types'
 
-import { snackbarContext } from '../../App'
+import { snackbarContext, userContext } from '../../App'
 
-type ProfileProps = {
-	user: UserProfile
-}
-
-const Profile: React.FC<ProfileProps> = ({ user }) => {
+const Profile: React.FC = () => {
 	const snackbar = React.useContext(snackbarContext)
+	const user = React.useContext(userContext)
 	
-	const isAuth = !!user.authToken
+	const profile = user.profile!
+	const isAuth = !!profile.authToken
 	
 	const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | null>(null)
 	
 	React.useEffect(() => {
-		snackbar.showThenHide(`Loaded in ${ user.elapsedMs } ms`, 1500)
+		snackbar.showThenHide(`Loaded in ${ profile.elapsedMs } ms`, 1500)
 		
 		return () => {
 			// Hide snackbar before unmounting
@@ -33,10 +31,10 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
 		<Container>
 			<Grid container spacing={ 0 } sx={ { height: '92vh' } }>
 				<Grid item xs={ 3 }>
-					<InfoSection user={ user } isAuth={ isAuth } />
+					<InfoSection user={ profile } isAuth={ isAuth } />
 				</Grid>
 				<Grid item xs={ 6 } display='flex' alignItems='center' justifyContent='stretch'>
-					<RepoSection user={ user } isAuth={ isAuth } setShowedRepo={ setShowedRepo } />
+					<ReposSection user={ profile } isAuth={ isAuth } setShowedRepo={ setShowedRepo } />
 				</Grid>
 				<Grid item xs={ 3 }>
 					<RepoInfoSection repo={ showedRepo } />

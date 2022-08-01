@@ -12,9 +12,9 @@ import {
 import { teal, green, red } from '@mui/material/colors'
 import dateFormat from 'dateformat'
 
-import { GitHubRepo } from '../../types'
+import { GitHubRepo } from '../../../types'
 
-import { convertKB } from '../../utils'
+import { convertKB } from '../../../utils'
 
 type RepoInfoProps = {
 	repo: GitHubRepo | null

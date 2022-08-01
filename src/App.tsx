@@ -26,6 +26,7 @@ export interface SnackbarContextProps {
 export const snackbarContext = React.createContext<SnackbarContextProps>({} as SnackbarContextProps)
 
 export interface UserContextProps {
+	/** Inside private routes profile is NOT null */
 	profile: UserProfile | null
 	setProfile: (value: (((val: (UserProfile | null)) => (UserProfile | null)) | UserProfile | null)) => void
 }
@@ -176,7 +177,7 @@ const App: React.FC = () => {
 							} />
 							<Route path='profile' element={
 								<PrivateRoute condition={ !!userProfile } redirect='/login'>
-									<Profile user={ userProfile! } />
+									<Profile />
 								</PrivateRoute>
 							} />
 							<Route path='*' element={ <NotFound /> } />

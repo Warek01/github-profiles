@@ -2,9 +2,9 @@ import * as React from 'react'
 import { AccordionSummary, Typography, Accordion, AccordionDetails } from '@mui/material'
 import { ExpandMore } from '@mui/icons-material'
 
-import analyzeReposLanguages from '../../utils/analyzeReposLanguages'
+import analyzeReposLanguages from '../../../utils/analyzeReposLanguages'
 
-import { snackbarContext, userContext } from '../../App'
+import { snackbarContext, userContext } from '../../../App'
 
 const LangInfo: React.FC = () => {
 	const snackbar = React.useContext(snackbarContext)

@@ -20,11 +20,7 @@ import {
 
 import LangInfo from './LangInfo'
 
-import { UserProfile } from '../../types'
-
-import analyzeReposLanguages from '../../utils/analyzeReposLanguages'
-
-import { snackbarContext } from '../../App'
+import { UserProfile } from '../../../types'
 
 type InfoSectionProps = {
 	user: UserProfile
@@ -32,8 +28,6 @@ type InfoSectionProps = {
 }
 
 const InfoSection: React.FC<InfoSectionProps> = ({ user, isAuth }) => {
-	const snackbar = React.useContext(snackbarContext)
-	
 	const avatarSize = React.useMemo(() => ({
 		width: {
 			lg: '128px',

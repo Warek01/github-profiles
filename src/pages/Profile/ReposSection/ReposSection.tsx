@@ -3,9 +3,9 @@ import { Paper, Stack } from '@mui/material'
 
 import Repo from './Repo'
 
-import { customScrollbar } from '../../themes'
+import { customScrollbar } from '../../../themes'
 
-import { UserProfile, GitHubRepo } from '../../types'
+import { UserProfile, GitHubRepo } from '../../../types'
 
 type RepoSectionProps = {
 	user: UserProfile
@@ -13,7 +13,7 @@ type RepoSectionProps = {
 	setShowedRepo: (repo: GitHubRepo | null) => void
 }
 
-const RepoSection: React.FC<RepoSectionProps> = ({ user, isAuth, setShowedRepo }) => {
+const ReposSection: React.FC<RepoSectionProps> = ({ user, isAuth, setShowedRepo }) => {
 	const repos: JSX.Element[] = user.repos.map(r => (
 			<Repo key={ r.id } repo={ r } setShowedRepo={ setShowedRepo } />
 		)
@@ -38,5 +38,5 @@ const RepoSection: React.FC<RepoSectionProps> = ({ user, isAuth, setShowedRepo }
 	)
 }
 
-export default RepoSection
+export default ReposSection
 
