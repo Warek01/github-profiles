@@ -17,7 +17,7 @@ const LangInfo: React.FC = () => {
 	
 	const getLangInfo = React.useCallback(async (): Promise<void> => {
 		const langMap = await analyzeReposLanguages(user.profile!.repos)
-		snackbar.showThenHide(`Loaded in ${ langMap.elapsedMs } ms`, 1000)
+		snackbar.showThenHide(`Loaded in ${ langMap.elapsedMs } ms`)
 		
 		const sortedArr: [string, number][] = []
 		langMap.parsed.forEach((value, key) => sortedArr.push([key, value]))

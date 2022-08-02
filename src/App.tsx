@@ -19,7 +19,7 @@ import { fetchUserProfile } from './utils'
 
 export interface SnackbarContextProps {
 	show: (message: string) => void
-	showThenHide: (message: string, delay: number) => void
+	showThenHide: (message: string, delay?: number) => void
 	hide: () => void
 }
 
@@ -62,7 +62,7 @@ const App: React.FC = () => {
 		setSnackbarMessage('')
 	}, [])
 	
-	const showSnackbarThenHide = React.useCallback((message: string, delay: number): void => {
+	const showSnackbarThenHide = React.useCallback((message: string, delay: number = 2000): void => {
 		showSnackbar(message)
 		setTimeout(hideSnackbar, delay)
 	}, [])
@@ -148,7 +148,7 @@ const App: React.FC = () => {
 		if (userProfile && (path === '/' || path === '/login')) {
 			addRegisteredUser(userProfile.login)
 			navigate('/profile')
-			showSnackbarThenHide(`Profile fetched in ${ userProfile.elapsedMs } ms`, 1500)
+			showSnackbarThenHide(`Profile fetched in ${ userProfile.elapsedMs } ms`)
 		}
 	}, [userProfile])
 	
