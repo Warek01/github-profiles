@@ -110,7 +110,7 @@ const App: React.FC = () => {
 	}, [location])
 	
 	React.useEffect(() => {
-			if (userProfile || !loginUserName) return;
+		if (userProfile || !loginUserName) return;
 			
 			(async () => {
 				console.log(`Fetching ${ loginUserName }`)
