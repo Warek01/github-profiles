@@ -38,7 +38,7 @@ const RepoInfoSection: React.FC<RepoInfoProps> = ({ repo }) => {
 					/>
 					<RoundBgText
 						text={ repo.license?.key ?? 'No license' }
-						bg={ repo.private ? red[500] : green[300] }
+						bg={ !repo.license ? red[500] : green[300] }
 						tooltip='License'
 					/>
 				</Grid>

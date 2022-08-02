@@ -1,20 +1,16 @@
 import React from 'react'
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom'
-import { ThemeProvider, CssBaseline, Snackbar, Backdrop, CircularProgress } from '@mui/material'
+import { ThemeProvider, CssBaseline, Snackbar } from '@mui/material'
 
-import Login from './pages/Login'
-import Profile from './pages/Profile'
-import NotFound from './pages/NotFound'
-import Blank from './pages/Blank'
-import Header from './components/Header'
-import PrivateRoute from './components/PrivateRoute'
+import { Blank, NotFound, Login } from './pages'
+import { Header, PrivateRoute, LoadingScreen } from './components'
+
+// const Login = React.lazy(() => import('./pages/Login'))
+const Profile = React.lazy(() => import('./pages/Profile'))
 
 import { UserProfile } from './types'
-
 import { darkTheme, lightTheme } from './themes'
-
 import { useLocalStorage } from './hooks'
-
 import { fetchUserProfile } from './utils'
 
 export interface SnackbarContextProps {
@@ -27,8 +23,11 @@ export const snackbarContext = React.createContext<SnackbarContextProps>({} as S
 
 export interface UserContextProps {
 	/** Inside private routes profile is NOT null */
-	profile: UserProfile | null
-	setProfile: (value: (((val: (UserProfile | null)) => (UserProfile | null)) | UserProfile | null)) => void
+	profile?: UserProfile
+	setProfile: (value: (((val: (UserProfile | undefined)) =>
+			(UserProfile | undefined))
+		| UserProfile
+		| undefined)) => void
 }
 
 export const userContext = React.createContext<UserContextProps>({} as UserContextProps)
@@ -46,7 +45,7 @@ const App: React.FC = () => {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	
 	const [registeredUsers, setRegisteredUsers] = useLocalStorage<string[]>('registered-users', [])
-	const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>('user-profile', null)
+	const [userProfile, setUserProfile] = useLocalStorage<UserProfile | undefined>('user-profile', undefined)
 	const [isDarkTheme, switchTheme] = useLocalStorage<boolean>('dark-theme', false)
 	
 	const isFocused = React.useCallback((element: Element): boolean => document.activeElement! === element, [])
@@ -83,14 +82,14 @@ const App: React.FC = () => {
 	}, [])
 	
 	const logOut = React.useCallback((): void => {
-		setUserProfile(null)
+		setUserProfile(undefined)
 		setLoginUserName('')
 		setOauthToken('')
 		hideSnackbar()
 		navigate('/login')
 	}, [])
 	
-	const updateUserProfile = React.useCallback(() => {
+	const updateUserProfile = React.useCallback((): void => {
 		if (!userProfile) return
 		
 		setIsLoading(true);
@@ -171,30 +170,30 @@ const App: React.FC = () => {
 							switchTheme={ () => switchTheme(prev => !prev) }
 							updateUserProfile={ updateUserProfile }
 						/>
-						<Routes>
-							<Route path='/' element={ <Blank /> } />
-							<Route path='login' element={
-								<PrivateRoute condition={ !userProfile } redirect='/profile'>
-									<Login
-										errorMessage={ loginErrMessage }
-										isFocused={ isFocused }
-										onLogin={ handleOnLogin }
-										removeRegisteredUser={ removeRegisteredUser }
-										registeredUsers={ registeredUsers }
-									/>
-								</PrivateRoute>
-							} />
-							<Route path='profile' element={
-								<PrivateRoute condition={ !!userProfile } redirect='/login'>
-									<Profile />
-								</PrivateRoute>
-							} />
-							<Route path='*' element={ <NotFound /> } />
-						</Routes>
+						<React.Suspense fallback={ <LoadingScreen open={ true } /> }>
+							<Routes>
+								<Route path='/' element={ <Blank /> } />
+								<Route path='login' element={
+									<PrivateRoute condition={ !userProfile } redirect='/profile'>
+										<Login
+											errorMessage={ loginErrMessage }
+											isFocused={ isFocused }
+											onLogin={ handleOnLogin }
+											removeRegisteredUser={ removeRegisteredUser }
+											registeredUsers={ registeredUsers }
+										/>
+									</PrivateRoute>
+								} />
+								<Route path='profile' element={
+									<PrivateRoute condition={ !!userProfile } redirect='/login'>
+										<Profile />
+									</PrivateRoute>
+								} />
+								<Route path='*' element={ <NotFound /> } />
+							</Routes>
+						</React.Suspense>
 						{ /* Backdrop to start when profile is loading */ }
-						<Backdrop open={ isLoading } sx={ { zIndex: 999 } }>
-							<CircularProgress size={ 100 } />
-						</Backdrop>
+						<LoadingScreen open={ isLoading } />
 						{ /* Snackbar controlled by snackbarContext */ }
 						<Snackbar message={ snackbarMessage } open={ !!snackbarMessage } />
 					</userContext.Provider>
