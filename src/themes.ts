@@ -14,23 +14,6 @@ const componentsOverride: Components = {
 	}
 }
 
-const customScrollbar = {
-	'&::-webkit-scrollbar': {
-		width: '8px'
-	},
-	'&::-webkit-scrollbar-thumb': {
-		backgroundColor: 'primary.main',
-		borderRadius: '4px'
-	},
-	'&::-webkit-scrollbar-thumb:hover': {
-		backgroundColor: 'primary.light'
-	},
-	'&::-webkit-scrollbar-track': {
-		backgroundColor: blue[100],
-		borderRadius: '4px'
-	}
-}
-
 const lightTheme = createTheme({
 	palette: {
 		mode: 'light'
@@ -44,5 +27,22 @@ const darkTheme = createTheme({
 	},
 	components: componentsOverride
 })
+
+const customScrollbar = {
+	'&::-webkit-scrollbar': {
+		width: '8px'
+	},
+	'&::-webkit-scrollbar-thumb': {
+		backgroundColor: lightTheme.palette.primary.main,
+		borderRadius: '4px'
+	},
+	'&::-webkit-scrollbar-thumb:hover': {
+		backgroundColor: lightTheme.palette.primary.light
+	},
+	'&::-webkit-scrollbar-track': {
+		backgroundColor: blue[100],
+		borderRadius: '4px'
+	}
+}
 
 export { customScrollbar, darkTheme, lightTheme }

@@ -99,7 +99,7 @@ const InfoSection: React.FC = () => {
 				<PlaylistAdd sx={ { fontSize: '1em', marginRight: '5px' } } />
 				{ profile.public_gists ?? 0 } public gists
 			</Grid>
-			<Grid item>
+			<Grid item sx={ { marginTop: '10px' } }>
 				<LangInfo />
 			</Grid>
 		</Grid>

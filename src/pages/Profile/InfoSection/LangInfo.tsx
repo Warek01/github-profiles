@@ -34,9 +34,18 @@ const LangInfo: React.FC = () => {
 	}, [langList])
 	
 	return (
-		<Accordion expanded={ langListExpanded } sx={ { maxHeight: '30vh', overflow: 'auto', ...customScrollbar } }>
+		<Accordion
+			expanded={ langListExpanded }
+			sx={ {
+				maxHeight: '30vh',
+				overflow: 'auto',
+				maxWidth: '80%',
+				fontSize: '12px',
+				...customScrollbar
+			} }
+		>
 			<AccordionSummary expandIcon={ <ExpandMore /> } onClick={ handleAccordionExpansion }>
-				<Typography>
+				<Typography sx={ { color: 'primary.main' } }>
 					Languages
 				</Typography>
 			</AccordionSummary>
