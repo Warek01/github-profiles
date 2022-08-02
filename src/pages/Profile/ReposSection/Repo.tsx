@@ -5,7 +5,7 @@ import GitHubRepo from '../../../types/GitHubRepo'
 
 type RepoProps = {
 	repo: GitHubRepo
-	setShowedRepo: (repo: GitHubRepo | null) => void
+	setShowedRepo: (repo: GitHubRepo | undefined) => void
 };
 
 const Repo: React.FC<RepoProps> = ({ repo, setShowedRepo }) => {

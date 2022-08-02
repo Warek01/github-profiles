@@ -15,7 +15,7 @@ const Profile: React.FC = () => {
 	
 	const profile = user.profile!
 	
-	const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | null>(null)
+	const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | undefined>(undefined)
 	
 	React.useEffect(() => {
 		return () => {

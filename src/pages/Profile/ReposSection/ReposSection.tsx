@@ -10,7 +10,7 @@ import { GitHubRepo } from '../../../types'
 import { userContext } from '../../../App'
 
 type RepoSectionProps = {
-	setShowedRepo: (repo: GitHubRepo | null) => void
+	setShowedRepo: (repo: GitHubRepo | undefined) => void
 }
 
 const ReposSection: React.FC<RepoSectionProps> = ({ setShowedRepo }) => {

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Collapse, Grid, Paper, Typography, Tooltip, Box } from '@mui/material'
+import { Grid, Paper } from '@mui/material'
 import {
 	InfoOutlined,
 	SdCardOutlined,
@@ -9,15 +9,17 @@ import {
 	ForkRight,
 	Topic
 } from '@mui/icons-material'
-import { teal, green, red } from '@mui/material/colors'
+import { green, red } from '@mui/material/colors'
 import dateFormat from 'dateformat'
 
 import { GitHubRepo } from '../../../types'
 
 import { convertKB } from '../../../utils'
 
+import { RoundBgText, StartIconText } from '../../../components'
+
 type RepoInfoProps = {
-	repo: GitHubRepo | null
+	repo?: GitHubRepo
 }
 
 const RepoInfoSection: React.FC<RepoInfoProps> = ({ repo }) => {
@@ -29,98 +31,86 @@ const RepoInfoSection: React.FC<RepoInfoProps> = ({ repo }) => {
 					{ repo.name }
 				</Grid>
 				<Grid item>
-					<Typography sx={ {
-						backgroundColor: repo.private ? red[500] : green[300],
-						padding: '.25em .5em',
-						borderRadius: '1em',
-						fontSize: '.75em',
-						cursor: 'default',
-						margin: '0 5px'
-					} } component='span'>
-						{ repo.private ? 'Private' : 'Public' }
-					</Typography>
-					<Typography sx={ {
-						backgroundColor: !repo.license ? red[500] : green[300],
-						padding: '.25em .5em',
-						borderRadius: '1em',
-						fontSize: '.75em',
-						cursor: 'default',
-						margin: '0 5px'
-					} } component='span'>
-						{ repo.license?.key ?? 'No license' }
-					</Typography>
+					<RoundBgText
+						text={ repo.private ? 'Private' : 'Public' }
+						bg={ repo.private ? red[500] : green[300] }
+						tooltip='Visibility'
+					/>
+					<RoundBgText
+						text={ repo.license?.key ?? 'No license' }
+						bg={ repo.private ? red[500] : green[300] }
+						tooltip='License'
+					/>
 				</Grid>
 				<Grid item>
-					<Collapse in={ !!repo.description }>
-						<Tooltip title='Description'>
-							<Typography>
-								<InfoOutlined fontSize='small' sx={ { marginRight: '5px' } } />
-								{ repo.description }
-							</Typography>
-						</Tooltip>
-					</Collapse>
+					<StartIconText
+						condition={ !!repo.description }
+						text={ repo.description }
+						icon={
+							<InfoOutlined fontSize='small' sx={ { marginRight: '5px' } } />
+						}
+						tooltip='Description'
+					/>
 				</Grid>
 				<Grid item>
-					<Collapse in={ !!repo.language }>
-						<Tooltip title='Language'>
+					<StartIconText
+						condition={ !!repo.language }
+						text={ repo.language }
+						icon={
 							<Terminal fontSize='small' sx={ { marginRight: '5px' } } />
-						</Tooltip>
-						<Tooltip title='Language'>
-							<Typography component='span' sx={ { color: teal[400] } }>
-								{ repo.language }
-							</Typography>
-						</Tooltip>
-					</Collapse>
+						}
+						tooltip='Language'
+					/>
 				</Grid>
 				<Grid item>
-					<Tooltip title='Created at'>
-						<AccessTime fontSize='inherit' sx={ { marginRight: '5px' } } />
-					</Tooltip>
-					<Tooltip title='Created at'>
-					<span>
-						{ dateFormat(repo.created_at, 'dd/mm/yyyy hh:mm') }
-					</span>
-					</Tooltip>
+					<StartIconText
+						condition={ !!repo.created_at }
+						text={ dateFormat(repo.created_at, 'dd/mm/yyyy hh:mm') }
+						icon={
+							<AccessTime fontSize='inherit' sx={ { marginRight: '5px' } } />
+						}
+						tooltip='Creation date'
+					/>
 				</Grid>
 				<Grid item>
-					<Tooltip title='Size'>
-						<SdCardOutlined fontSize='small' sx={ { marginRight: '5px' } } />
-					</Tooltip>
-					<Tooltip title='Size'>
-					<span>
-						{ convertKB(repo.size) }
-					</span>
-					</Tooltip>
+					<StartIconText
+						condition={ !!repo.size }
+						text={ convertKB(repo.size) }
+						icon={
+							<SdCardOutlined fontSize='small' sx={ { marginRight: '5px' } } />
+						}
+						tooltip='Size'
+					/>
 				</Grid>
 				<Grid item>
-					<Tooltip title='Watchers'>
-						<RemoveRedEyeOutlined fontSize='inherit' sx={ { marginRight: '5px' } } />
-					</Tooltip>
-					<Tooltip title='Watchers'>
-					<span>
-						{ repo.watchers_count }
-					</span>
-					</Tooltip>
+					<StartIconText
+						condition={ !!repo.watchers_count }
+						text={ convertKB(repo.watchers_count) }
+						icon={
+							<RemoveRedEyeOutlined fontSize='inherit' sx={ { marginRight: '5px' } } />
+						}
+						tooltip='Watchers count'
+					/>
 				</Grid>
 				<Grid item>
-					<Tooltip title='Forks'>
-						<ForkRight fontSize='inherit' sx={ { marginRight: '5px' } } />
-					</Tooltip>
-					<Tooltip title='Forks'>
-					<span>
-						{ repo.forks }, allowed: { repo.allow_forking.toString() }
-					</span>
-					</Tooltip>
+					<StartIconText
+						condition={ !Number.isNaN(repo.forks) }
+						text={ `${ repo.forks }, allowed: ${ repo.allow_forking.toString() }` }
+						icon={
+							<ForkRight fontSize='inherit' sx={ { marginRight: '5px' } } />
+						}
+						tooltip='Forks count'
+					/>
 				</Grid>
 				<Grid item>
-					<Tooltip title='Topics'>
-						<Topic fontSize='inherit' sx={ { marginRight: '5px' } } />
-					</Tooltip>
-					<Tooltip title='Topics'>
-					<span>
-						{ repo.topics.join(', ') || 'None' }
-					</span>
-					</Tooltip>
+					<StartIconText
+						condition={ !!repo.topics }
+						text={ repo.topics.join(', ') || 'None' }
+						icon={
+							<Topic fontSize='inherit' sx={ { marginRight: '5px' } } />
+						}
+						tooltip='Topics'
+					/>
 				</Grid>
 			</Paper>
 		)
