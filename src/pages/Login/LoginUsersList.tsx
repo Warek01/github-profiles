@@ -13,7 +13,7 @@ type PrevUsersProps = {
 	margin: string
 }
 
-const PrevUsers: React.FC<PrevUsersProps> = ({
+const LoginUsersList: React.FC<PrevUsersProps> = ({
 	                                             logFromUser,
 	                                             registeredUsers,
 	                                             removeRegisteredUser,
@@ -65,5 +65,5 @@ const PrevUsers: React.FC<PrevUsersProps> = ({
 	)
 }
 
-export default PrevUsers
+export default LoginUsersList
 

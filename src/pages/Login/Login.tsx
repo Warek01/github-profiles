@@ -4,12 +4,12 @@ import { Close } from '@mui/icons-material'
 
 import { snackbarContext } from '../../App'
 
-import PrevUsers from './PrevUsers'
+import LoginUsersList from './LoginUsersList'
 
 type LoginProps = {
 	errorMessage: string
 	isFocused: (element: Element) => boolean
-	setUserProfile: (userName: string, token: string) => void
+	onLogin: (userName: string, token: string) => void
 	registeredUsers: string[]
 	removeRegisteredUser: (name: string) => void
 };
@@ -17,7 +17,7 @@ type LoginProps = {
 const Login: React.FC<LoginProps> = ({
 	                                     errorMessage,
 	                                     isFocused,
-	                                     setUserProfile,
+	                                     onLogin,
 	                                     registeredUsers,
 	                                     removeRegisteredUser
                                      }) => {
@@ -47,27 +47,27 @@ const Login: React.FC<LoginProps> = ({
 		const text = inputText.trim()
 		const token = oauthToken.trim()
 		if (!text || (oauthInputShown && !token)) return
-		setUserProfile(text, token)
-	}, [inputText, setUserProfile, oauthToken])
+		onLogin(text, token)
+	}, [inputText, oauthToken])
 	
 	const onLoginInputChange = React.useCallback(() => {
 		setInputText(loginInputRef.current!.value)
-	}, [setInputText, loginInputRef])
+	}, [loginInputRef])
 	
 	const onOauthTokenChange = React.useCallback(() => {
 		setOauthToken(oauthInputRef.current!.value)
-	}, [oauthInputRef, setOauthToken])
+	}, [oauthInputRef])
 	
 	const logFromUser = React.useCallback((userName: string, token: string = ''): void => {
 		snackbar.show(`Loading ${ userName }`)
-		setUserProfile(userName, token) // Must implement auth
-	}, [setUserProfile, snackbar])
+		onLogin(userName, token) // Must implement auth
+	}, [snackbar])
 	
 	const reset = React.useCallback((): void => {
 		setOauthToken('')
 		setInputText('')
 		loginInputRef.current!.focus()
-	}, [setOauthToken, setInputText, loginInputRef])
+	}, [loginInputRef])
 	
 	const handleInputFormKeydown = React.useCallback((event: React.KeyboardEvent<HTMLElement>): void => {
 		switch (event.key) {
@@ -83,26 +83,37 @@ const Login: React.FC<LoginProps> = ({
 				break
 			}
 		}
-	}, [oauthToken, submit, setOauthInputShown])
+	}, [oauthToken, submit])
 	
-	const errorElement = <Collapse in={ errorShown } children={ <Alert severity='error' action={ <IconButton
-		size='small'
-		onClick={ () => setErrorShown(false) }
-	><Close fontSize='inherit' /></IconButton> }>
-		{ errorMessage }
-	</Alert> } />
+	const errorElement: JSX.Element = (
+		<Collapse in={ errorShown }>
+			<Alert severity='error' action={
+				<IconButton
+					size='small'
+					onClick={ () => setErrorShown(false) }
+				>
+					<Close fontSize='inherit' />
+				</IconButton>
+			}>
+				{ errorMessage }
+			</Alert>
+		</Collapse>
+	)
 	
-	const authSectionElement = oauthInputShown ? <Input
-			type='password'
-			autoComplete='off'
-			inputRef={ oauthInputRef }
-			placeholder='KEY HERE'
-			value={ oauthToken }
-			onChange={ onOauthTokenChange }
-		/> :
-		<Button onClick={ () => setOauthInputShown(true) }>
-			oauth key
-		</Button>
+	const authSectionElement: JSX.Element = (
+		oauthInputShown ?
+			<Input
+				type='password'
+				autoComplete='off'
+				inputRef={ oauthInputRef }
+				placeholder='KEY HERE'
+				value={ oauthToken }
+				onChange={ onOauthTokenChange }
+			/>
+			: <Button onClick={ () => setOauthInputShown(true) }>
+				oauth key
+			</Button>
+	)
 	
 	React.useEffect(() => {
 		if (oauthInputShown)
@@ -154,7 +165,7 @@ const Login: React.FC<LoginProps> = ({
 				</Card>
 			</Grid>
 			
-			<PrevUsers
+			<LoginUsersList
 				logFromUser={ logFromUser }
 				removeRegisteredUser={ removeRegisteredUser }
 				registeredUsers={ registeredUsers }

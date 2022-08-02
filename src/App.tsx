@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom'
-import { ThemeProvider, CssBaseline, Snackbar, CircularProgress } from '@mui/material'
+import { ThemeProvider, CssBaseline, Snackbar, Backdrop, CircularProgress } from '@mui/material'
 
 import Login from './pages/Login'
 import Profile from './pages/Profile'
@@ -43,6 +43,7 @@ const App: React.FC = () => {
 	const [oauthToken, setOauthToken] = React.useState<string>('')
 	const [loginErrMessage, setLoginErrMessage] = React.useState<string>('')
 	const [snackbarMessage, setSnackbarMessage] = React.useState<string>('')
+	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	
 	const [registeredUsers, setRegisteredUsers] = useLocalStorage<string[]>('registered-users', [])
 	const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>('user-profile', null)
@@ -76,7 +77,7 @@ const App: React.FC = () => {
 	const removeRegisteredUser = React.useCallback((login: string) => saveRegisteredUsers(registeredUsers.filter(user => user !== login)),
 		[])
 	
-	const setUserProfileCallback = React.useCallback((userName: string, token: string = ''): void => {
+	const handleOnLogin = React.useCallback((userName: string, token: string = ''): void => {
 		setOauthToken(token)
 		setLoginUserName(userName)
 	}, [])
@@ -90,10 +91,14 @@ const App: React.FC = () => {
 	}, [])
 	
 	const updateUserProfile = React.useCallback(() => {
-		if (!userProfile) return;
+		if (!userProfile) return
+		
+		setIsLoading(true);
 		
 		(async () => {
 			const userData = await fetchUserProfile(userProfile.login, userProfile.authToken) as UserProfile
+			
+			setIsLoading(false)
 			setUserProfile(userData)
 			
 			console.log('Profile updated,', userData.login)
@@ -110,6 +115,7 @@ const App: React.FC = () => {
 			
 			(async () => {
 				console.log(`Fetching ${ loginUserName }`)
+				setIsLoading(true)
 				const userData = await fetchUserProfile(loginUserName, oauthToken)
 				hideSnackbar()
 				
@@ -132,6 +138,8 @@ const App: React.FC = () => {
 						setLoginUserName('')
 						setOauthToken('')
 				}
+				
+				setIsLoading(false)
 			})()
 		}, [loginUserName]
 	)
@@ -170,7 +178,7 @@ const App: React.FC = () => {
 									<Login
 										errorMessage={ loginErrMessage }
 										isFocused={ isFocused }
-										setUserProfile={ setUserProfileCallback }
+										onLogin={ handleOnLogin }
 										removeRegisteredUser={ removeRegisteredUser }
 										registeredUsers={ registeredUsers }
 									/>
@@ -183,6 +191,11 @@ const App: React.FC = () => {
 							} />
 							<Route path='*' element={ <NotFound /> } />
 						</Routes>
+						{ /* Backdrop to start when profile is loading */ }
+						<Backdrop open={ isLoading } sx={ { zIndex: 999 } }>
+							<CircularProgress size={ 100 } />
+						</Backdrop>
+						{ /* Snackbar controlled by snackbarContext */ }
 						<Snackbar message={ snackbarMessage } open={ !!snackbarMessage } />
 					</userContext.Provider>
 				</snackbarContext.Provider>

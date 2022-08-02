@@ -6,6 +6,8 @@ import analyzeReposLanguages from '../../../utils/analyzeReposLanguages'
 
 import { snackbarContext, userContext } from '../../../App'
 
+import { customScrollbar } from '../../../themes'
+
 const LangInfo: React.FC = () => {
 	const snackbar = React.useContext(snackbarContext)
 	const user = React.useContext(userContext)
@@ -29,10 +31,10 @@ const LangInfo: React.FC = () => {
 			await getLangInfo()
 		
 		setLangListExpanded(prev => !prev)
-	}, [])
+	}, [langList])
 	
 	return (
-		<Accordion expanded={ langListExpanded } sx={ { maxHeight: '30vh', overflow: 'auto' } }>
+		<Accordion expanded={ langListExpanded } sx={ { maxHeight: '30vh', overflow: 'auto', ...customScrollbar } }>
 			<AccordionSummary expandIcon={ <ExpandMore /> } onClick={ handleAccordionExpansion }>
 				<Typography>
 					Languages
