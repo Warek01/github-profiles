@@ -8,10 +8,11 @@
   "endOfLine": "crlf",
   "bracketSameLine": true,
   "bracketSpacing": true,
-  "htmlWhitespaceSensitivity": "css",
-  "jsxSingleQuote": true,
+  "htmlWhitespaceSensitivity": "strict",
+  "jsxSingleQuote": false,
   "cursorOffset": -1,
   "quoteProps": "as-needed",
+  "printWidth": 80,
   "overrides": [
 
   ]

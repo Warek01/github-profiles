@@ -3,7 +3,7 @@ import { Route, Routes, useNavigate, useLocation } from 'react-router-dom'
 import { ThemeProvider, CssBaseline, Snackbar } from '@mui/material'
 
 import { Blank, NotFound, Login } from './pages'
-import { Header, PrivateRoute, LoadingScreen } from './components'
+import { Header, PrivateRoute, LoadingScreen, FallbackOnError } from './components'
 
 // const Login = React.lazy(() => import('./pages/Login'))
 const Profile = React.lazy(() => import('./pages/Profile'))
@@ -110,7 +110,7 @@ const App: React.FC = () => {
 	}, [location])
 	
 	React.useEffect(() => {
-		if (userProfile || !loginUserName) return;
+			if (userProfile || !loginUserName) return;
 			
 			(async () => {
 				console.log(`Fetching ${ loginUserName }`)
@@ -151,55 +151,52 @@ const App: React.FC = () => {
 		}
 	}, [userProfile])
 	
-	React.useEffect(() => {
-		return () => {
-		}
-	}, [])
-	
 	return (
-		<ThemeProvider theme={ isDarkTheme ? darkTheme : lightTheme }>
-			<CssBaseline />
-			<div id='app'>
-				<snackbarContext.Provider
-					value={ { show: showSnackbar, hide: hideSnackbar, showThenHide: showSnackbarThenHide } }>
-					<userContext.Provider value={ { profile: userProfile, setProfile: setUserProfile } }>
-						<Header
-							logOut={ logOut }
-							loggedIn={ !!userProfile }
-							isDarkTheme={ isDarkTheme }
-							switchTheme={ () => switchTheme(prev => !prev) }
-							updateUserProfile={ updateUserProfile }
-						/>
-						<React.Suspense fallback={ <LoadingScreen open={ true } /> }>
-							<Routes>
-								<Route path='/' element={ <Blank /> } />
-								<Route path='login' element={
-									<PrivateRoute condition={ !userProfile } redirect='/profile'>
-										<Login
-											errorMessage={ loginErrMessage }
-											isFocused={ isFocused }
-											onLogin={ handleOnLogin }
-											removeRegisteredUser={ removeRegisteredUser }
-											registeredUsers={ registeredUsers }
-										/>
-									</PrivateRoute>
-								} />
-								<Route path='profile' element={
-									<PrivateRoute condition={ !!userProfile } redirect='/login'>
-										<Profile />
-									</PrivateRoute>
-								} />
-								<Route path='*' element={ <NotFound /> } />
-							</Routes>
-						</React.Suspense>
-						{ /* Backdrop to start when profile is loading */ }
-						<LoadingScreen open={ isLoading } />
-						{ /* Snackbar controlled by snackbarContext */ }
-						<Snackbar message={ snackbarMessage } open={ !!snackbarMessage } />
-					</userContext.Provider>
-				</snackbarContext.Provider>
-			</div>
-		</ThemeProvider>
+		<FallbackOnError fallbackComponent={ <h1>Critical error happened</h1> }>
+			<ThemeProvider theme={ isDarkTheme ? darkTheme : lightTheme }>
+				<CssBaseline />
+				<div id='app'>
+					<snackbarContext.Provider
+						value={ { show: showSnackbar, hide: hideSnackbar, showThenHide: showSnackbarThenHide } }>
+						<userContext.Provider value={ { profile: userProfile, setProfile: setUserProfile } }>
+							<Header
+								logOut={ logOut }
+								loggedIn={ !!userProfile }
+								isDarkTheme={ isDarkTheme }
+								switchTheme={ () => switchTheme(prev => !prev) }
+								updateUserProfile={ updateUserProfile }
+							/>
+							<React.Suspense fallback={ <LoadingScreen open={ true } /> }>
+								<Routes>
+									<Route path='/' element={ <Blank /> } />
+									<Route path='login' element={
+										<PrivateRoute condition={ !userProfile } redirect='/profile'>
+											<Login
+												errorMessage={ loginErrMessage }
+												isFocused={ isFocused }
+												onLogin={ handleOnLogin }
+												removeRegisteredUser={ removeRegisteredUser }
+												registeredUsers={ registeredUsers }
+											/>
+										</PrivateRoute>
+									} />
+									<Route path='profile' element={
+										<PrivateRoute condition={ !!userProfile } redirect='/login'>
+											<Profile />
+										</PrivateRoute>
+									} />
+									<Route path='*' element={ <NotFound /> } />
+								</Routes>
+							</React.Suspense>
+							{ /* Backdrop to start when profile is loading */ }
+							<LoadingScreen open={ isLoading } />
+							{ /* Snackbar controlled by snackbarContext */ }
+							<Snackbar message={ snackbarMessage } open={ !!snackbarMessage } />
+						</userContext.Provider>
+					</snackbarContext.Provider>
+				</div>
+			</ThemeProvider>
+		</FallbackOnError>
 	)
 }
 

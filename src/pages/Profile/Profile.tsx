@@ -7,13 +7,10 @@ import ReposSection from './ReposSection'
 
 import { GitHubRepo } from '../../types'
 
-import { snackbarContext, userContext } from '../../App'
+import { snackbarContext } from '../../App'
 
 const Profile: React.FC = () => {
 	const snackbar = React.useContext(snackbarContext)
-	const user = React.useContext(userContext)
-	
-	const profile = user.profile!
 	
 	const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | undefined>(undefined)
 	
