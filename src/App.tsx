@@ -1,35 +1,15 @@
 import React from 'react'
-import { Route, Routes, useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { ThemeProvider, CssBaseline, Snackbar } from '@mui/material'
 
-import { Blank, NotFound, Login } from './pages'
-import { Header, PrivateRoute, LoadingScreen, FallbackOnError } from './components'
-
-// const Login = React.lazy(() => import('./pages/Login'))
-const Profile = React.lazy(() => import('./pages/Profile'))
-
+import { Header, LoadingScreen, FallbackOnError, AppRoutes } from './components'
 import { UserProfile } from './types'
 import { darkTheme, lightTheme } from './themes'
 import { useLocalStorage } from './hooks'
 import { fetchUserProfile } from './utils'
-
-export interface SnackbarContextProps {
-	show: (message: string) => void
-	showThenHide: (message: string, delay?: number) => void
-	hide: () => void
-}
+import { UserContextProps, SnackbarContextProps } from './types/context'
 
 export const snackbarContext = React.createContext<SnackbarContextProps>({} as SnackbarContextProps)
-
-export interface UserContextProps {
-	/** Inside private routes profile is NOT null */
-	profile?: UserProfile
-	setProfile: (value: (((val: (UserProfile | undefined)) =>
-			(UserProfile | undefined))
-		| UserProfile
-		| undefined)) => void
-}
-
 export const userContext = React.createContext<UserContextProps>({} as UserContextProps)
 
 const App: React.FC = () => {
@@ -47,8 +27,6 @@ const App: React.FC = () => {
 	const [registeredUsers, setRegisteredUsers] = useLocalStorage<string[]>('registered-users', [])
 	const [userProfile, setUserProfile] = useLocalStorage<UserProfile | undefined>('user-profile', undefined)
 	const [isDarkTheme, switchTheme] = useLocalStorage<boolean>('dark-theme', false)
-	
-	const isFocused = React.useCallback((element: Element): boolean => document.activeElement! === element, [])
 	
 	const saveRegisteredUsers = React.useCallback((logins: string[]) => setRegisteredUsers(logins),
 		[])
@@ -167,26 +145,13 @@ const App: React.FC = () => {
 								updateUserProfile={ updateUserProfile }
 							/>
 							<React.Suspense fallback={ <LoadingScreen open={ true } /> }>
-								<Routes>
-									<Route path='/' element={ <Blank /> } />
-									<Route path='login' element={
-										<PrivateRoute condition={ !userProfile } redirect='/profile'>
-											<Login
-												errorMessage={ loginErrMessage }
-												isFocused={ isFocused }
-												onLogin={ handleOnLogin }
-												removeRegisteredUser={ removeRegisteredUser }
-												registeredUsers={ registeredUsers }
-											/>
-										</PrivateRoute>
-									} />
-									<Route path='profile' element={
-										<PrivateRoute condition={ !!userProfile } redirect='/login'>
-											<Profile />
-										</PrivateRoute>
-									} />
-									<Route path='*' element={ <NotFound /> } />
-								</Routes>
+								<AppRoutes
+									userProfile={ userProfile }
+									handleOnLogin={ handleOnLogin }
+									loginErrMessage={ loginErrMessage }
+									registeredUsers={ registeredUsers }
+									removeRegisteredUser={ removeRegisteredUser }
+								/>
 							</React.Suspense>
 							{ /* Backdrop to start when profile is loading */ }
 							<LoadingScreen open={ isLoading } />

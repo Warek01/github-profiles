@@ -6,34 +6,33 @@ import { snackbarContext } from '../../App'
 
 import LoginUsersList from './LoginUsersList'
 
-type LoginProps = {
+import { isFocused } from '../../utils'
+
+interface LoginProps {
 	errorMessage: string
-	isFocused: (element: Element) => boolean
 	onLogin: (userName: string, token: string) => void
 	registeredUsers: string[]
 	removeRegisteredUser: (name: string) => void
-};
+}
+
+const cardWidth = {
+	width: {
+		xl: '25vw',
+		lg: '25vw',
+		md: '35vw',
+		sm: '50vw',
+		xs: '75vw',
+		xxs: '85vw'
+	}
+}
 
 const Login: React.FC<LoginProps> = ({
 	                                     errorMessage,
-	                                     isFocused,
 	                                     onLogin,
 	                                     registeredUsers,
 	                                     removeRegisteredUser
                                      }) => {
 	const snackbar = React.useContext(snackbarContext)
-	
-	const cardWidth = React.useMemo(() =>
-		({
-			width: {
-				xl: '25vw',
-				lg: '25vw',
-				md: '35vw',
-				sm: '50vw',
-				xs: '75vw',
-				xxs: '85vw'
-			}
-		}), [])
 	
 	const [inputText, setInputText] = React.useState<string>('')
 	const [oauthToken, setOauthToken] = React.useState<string>('')

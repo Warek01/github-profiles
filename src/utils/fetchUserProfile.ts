@@ -1,4 +1,4 @@
-import { UserProfile, GitHubRepo, RawUserProfile } from '../types'
+import { UserProfile, GitHubRepo, GitHubResponseUserProfile } from '../types'
 
 /**
  * Loads user profile and its repositories
@@ -21,7 +21,7 @@ const fetchUserProfile = async (login: string, authToken: string = ''): Promise<
 		fetch(`https://api.github.com/users/${ login }/repos`, { headers })
 	])
 	
-	let profile: RawUserProfile = {} as RawUserProfile
+	let profile: GitHubResponseUserProfile = {} as GitHubResponseUserProfile
 	let repos: GitHubRepo[] = []
 	
 	for (const value of result) {
