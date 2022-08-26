@@ -155,7 +155,7 @@ const App: React.FC = () => {
 		<FallbackOnError fallbackComponent={ <h1>Critical error happened</h1> }>
 			<ThemeProvider theme={ isDarkTheme ? darkTheme : lightTheme }>
 				<CssBaseline />
-				<div id='app'>
+				<div id='app' className='w-screen h-screen'>
 					<snackbarContext.Provider
 						value={ { show: showSnackbar, hide: hideSnackbar, showThenHide: showSnackbarThenHide } }>
 						<userContext.Provider value={ { profile: userProfile, setProfile: setUserProfile } }>
