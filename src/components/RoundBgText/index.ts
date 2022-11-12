@@ -1,1 +1,1 @@
-export { default } from './RoundBgText';
+export { default } from './RoundBgText'

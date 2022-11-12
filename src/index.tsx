@@ -8,7 +8,8 @@ import App from './App'
 
 const root = ReactDOM.createRoot(document.querySelector<HTMLElement>('#root')!)
 
-root.render(<BrowserRouter>
-		<App />
-	</BrowserRouter>
+root.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
 )
