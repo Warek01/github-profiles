@@ -10,32 +10,32 @@ import { GitHubRepo } from '../../types'
 import { snackbarContext } from '../../App'
 
 const Profile: React.FC = () => {
-	const snackbar = React.useContext(snackbarContext)
-	
-	const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | undefined>(undefined)
-	
-	React.useEffect(() => {
-		return () => {
-			// Hide snackbar before unmounting
-			snackbar.hide()
-		}
-	}, [])
-	
-	return (
-		<Container>
-			<Grid container spacing={ 0 } sx={ { height: '92vh' } }>
-				<Grid item xs={ 3 }>
-					<InfoSection />
-				</Grid>
-				<Grid item xs={ 6 } display='flex' alignItems='center' justifyContent='stretch'>
-					<ReposSection setShowedRepo={ setShowedRepo } />
-				</Grid>
-				<Grid item xs={ 3 }>
-					<RepoInfoSection repo={ showedRepo } />
-				</Grid>
-			</Grid>
-		</Container>
-	)
+  const snackbar = React.useContext(snackbarContext)
+
+  const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | undefined>(undefined)
+
+  React.useEffect(() => {
+    return () => {
+      // Hide snackbar before unmounting
+      snackbar.hide()
+    }
+  }, [])
+
+  return (
+    <Container>
+      <Grid container spacing={0} sx={{ height: '92vh' }}>
+        <Grid item xs={3}>
+          <InfoSection />
+        </Grid>
+        <Grid item xs={6} display="flex" alignItems="center" justifyContent="stretch">
+          <ReposSection setShowedRepo={setShowedRepo} />
+        </Grid>
+        <Grid item xs={3}>
+          <RepoInfoSection repo={showedRepo} />
+        </Grid>
+      </Grid>
+    </Container>
+  )
 }
 
 export default Profile

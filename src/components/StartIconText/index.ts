@@ -1,1 +1,1 @@
-export { default } from './StartIconText';
+export { default } from './StartIconText'
