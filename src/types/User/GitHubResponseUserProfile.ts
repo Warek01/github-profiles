@@ -1,5 +1,5 @@
 /** Default profile object returned from GitHub API */
-export default interface RawUserProfile {
+export default interface GitHubResponseUserProfile {
 	avatar_url?: string
 	bio?: string
 	blog?: string
