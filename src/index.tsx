@@ -1,12 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import 'dotenv/config'
 
 import './index.css'
 import App from './App'
 
-const baseurl = process.env['BASE_NAME']
+const baseurl = process.env.REACT_APP_BASE_URL
 
 const root = ReactDOM.createRoot(document.querySelector<HTMLElement>('#root')!)
 
