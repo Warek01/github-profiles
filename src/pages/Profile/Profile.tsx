@@ -1,23 +1,20 @@
-import * as React from 'react'
+import React from 'react'
 import { Container, Grid } from '@mui/material'
 
 import RepoInfoSection from './RepoInfoSection'
 import InfoSection from './InfoSection'
 import ReposSection from './ReposSection'
-
-import { GitHubRepo } from '../../types'
-
-import { snackbarContext } from '../../App'
+import { GitHubRepo } from 'types'
+import { SnackbarContext } from 'context/snackbar'
 
 const Profile: React.FC = () => {
-  const snackbar = React.useContext(snackbarContext)
+  const { hideSnackbar } = React.useContext(SnackbarContext)
 
   const [showedRepo, setShowedRepo] = React.useState<GitHubRepo | undefined>(undefined)
 
   React.useEffect(() => {
     return () => {
-      // Hide snackbar before unmounting
-      snackbar.hide()
+      hideSnackbar()
     }
   }, [])
 

@@ -2,13 +2,10 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { Blank, Login, NotFound } from '../../pages'
-
 import { PrivateRoute } from '../index'
-
-import { UserProfile } from '../../types'
+import { UserProfileContext } from 'context/user-profile'
 
 interface AppRoutesProps {
-  userProfile?: UserProfile
   loginErrMessage: string
   handleOnLogin: (userName: string, token: string) => void
   removeRegisteredUser: (name: string) => void
@@ -18,12 +15,13 @@ interface AppRoutesProps {
 const Profile = React.lazy(() => import('../../pages/Profile'))
 
 const AppRoutes: React.FC<AppRoutesProps> = ({
-  userProfile,
   removeRegisteredUser,
   registeredUsers,
   handleOnLogin,
   loginErrMessage,
 }) => {
+  const { userProfile } = React.useContext(UserProfileContext)
+
   return (
     <Routes>
       <Route path="/" element={<Blank />} />

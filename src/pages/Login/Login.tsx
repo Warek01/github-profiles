@@ -1,12 +1,11 @@
-import * as React from 'react'
+import React from 'react'
 import { Input, Button, Grid, Card, Alert, IconButton, Collapse } from '@mui/material'
 import { Close } from '@mui/icons-material'
 
-import { snackbarContext } from '../../App'
-
 import LoginUsersList from './LoginUsersList'
 
-import { isFocused } from '../../utils'
+import { isFocused } from 'utils'
+import { SnackbarContext } from 'context/snackbar'
 
 interface LoginProps {
   errorMessage: string
@@ -27,7 +26,7 @@ const cardWidth = {
 }
 
 const Login: React.FC<LoginProps> = ({ errorMessage, onLogin, registeredUsers, removeRegisteredUser }) => {
-  const snackbar = React.useContext(snackbarContext)
+  const { showSnackbar } = React.useContext(SnackbarContext)
 
   const [inputText, setInputText] = React.useState<string>('')
   const [oauthToken, setOauthToken] = React.useState<string>('')
@@ -54,10 +53,10 @@ const Login: React.FC<LoginProps> = ({ errorMessage, onLogin, registeredUsers, r
 
   const logFromUser = React.useCallback(
     (userName: string, token: string = ''): void => {
-      snackbar.show(`Loading ${userName}`)
+      showSnackbar(`Loading ${userName}`)
       onLogin(userName, token) // Must implement auth
     },
-    [snackbar]
+    [showSnackbar]
   )
 
   const reset = React.useCallback((): void => {

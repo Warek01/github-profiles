@@ -2,23 +2,18 @@ import * as React from 'react'
 import { Paper, Stack } from '@mui/material'
 
 import Repo from './Repo'
-
 import { customScrollbar } from '../../../themes'
-
 import { GitHubRepo } from '../../../types'
-
-import { userContext } from '../../../App'
+import { UserProfileContext } from '../../../context/user-profile'
 
 type RepoSectionProps = {
   setShowedRepo: (repo: GitHubRepo | undefined) => void
 }
 
 const ReposSection: React.FC<RepoSectionProps> = ({ setShowedRepo }) => {
-  const user = React.useContext(userContext)
+  const { userProfile } = React.useContext(UserProfileContext)
 
-  const profile = user.profile!
-
-  const repos: JSX.Element[] = profile.repos.map(r => <Repo key={r.id} repo={r} setShowedRepo={setShowedRepo} />)
+  const repos: JSX.Element[] = userProfile!.repos.map(r => <Repo key={r.id} repo={r} setShowedRepo={setShowedRepo} />)
 
   return (
     <Stack
@@ -31,7 +26,7 @@ const ReposSection: React.FC<RepoSectionProps> = ({ setShowedRepo }) => {
         padding: '10px',
       }}>
       <Paper sx={{ textAlign: 'center' }} elevation={2}>
-        {profile.name ? profile.name!.split(' ')[0] : profile.login}'s repositories
+        {userProfile!.name ? userProfile!.name!.split(' ')[0] : userProfile!.login}'s repositories
       </Paper>
       {repos}
     </Stack>
